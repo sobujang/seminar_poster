@@ -1,658 +1,301 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>세미나 포스터 템플릿</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-            background: #f0f0f5;
-            min-height: 100vh;
-        }
-
-        .app {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* ── 왼쪽 편집 패널 ── */
-        .editor {
-            width: 340px;
-            flex-shrink: 0;
-            background: #fff;
-            border-right: 1px solid #e5e7eb;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            position: sticky;
-            top: 0;
-            overflow-y: auto;
-        }
-
-        .editor-header {
-            padding: 18px 20px 14px;
-            border-bottom: 1px solid #e5e7eb;
-            background: #fff;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .editor-header h2 {
-            font-size: 15px;
-            font-weight: 700;
-            color: #1a1a2e;
-            margin-bottom: 2px;
-        }
-
-        .editor-header p {
-            font-size: 11px;
-            color: #6b7280;
-        }
-
-        .editor-body {
-            padding: 16px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            flex: 1;
-        }
-
-        .field-group h3 {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            color: #2d2de0;
-            margin-bottom: 10px;
-        }
-
-        .field {
-            margin-bottom: 10px;
-        }
-
-        .field label {
-            display: block;
-            font-size: 11px;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 4px;
-        }
-
-        .field input,
-        .field textarea {
-            width: 100%;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 7px 10px;
-            font-size: 12px;
-            color: #1a1a2e;
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.15s;
-            resize: none;
-        }
-
-        .field input:focus,
-        .field textarea:focus {
-            border-color: #2d2de0;
-        }
-
-        /* 프로그램 행 */
-        .program-rows {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .program-row {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 10px;
-        }
-
-        .program-row-header {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 8px;
-        }
-
-        .row-num {
-            width: 20px;
-            height: 20px;
-            background: #2d2de0;
-            color: #fff;
-            border-radius: 50%;
-            font-size: 10px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .program-row-header span {
-            font-size: 11px;
-            font-weight: 600;
-            color: #374151;
-            flex: 1;
-        }
-
-        .btn-del-row {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #9ca3af;
-            font-size: 15px;
-            line-height: 1;
-            padding: 0 2px;
-            transition: color 0.15s;
-        }
-
-        .btn-del-row:hover {
-            color: #ef4444;
-        }
-
-        .program-row input {
-            width: 100%;
-            border: 1px solid #e5e7eb;
-            border-radius: 5px;
-            padding: 5px 8px;
-            font-size: 11px;
-            font-family: inherit;
-            outline: none;
-            background: #fff;
-            margin-bottom: 5px;
-        }
-
-        .program-row input:last-child {
-            margin-bottom: 0;
-        }
-
-        .program-row input:focus {
-            border-color: #2d2de0;
-        }
-
-        .program-row input::placeholder {
-            color: #9ca3af;
-        }
-
-        /* 추가 버튼 */
-        .btn-add-row {
-            width: 100%;
-            background: #f0f0ff;
-            border: 1.5px dashed #a0a0e0;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 12px;
-            font-weight: 500;
-            color: #2d2de0;
-            font-family: inherit;
-            cursor: pointer;
-            transition: background 0.15s;
-            margin-top: 4px;
-        }
-
-        .btn-add-row:hover {
-            background: #e0e0fa;
-        }
-
-        /* 하단 버튼 */
-        .editor-footer {
-            padding: 14px 20px;
-            border-top: 1px solid #e5e7eb;
-            background: #fff;
-            position: sticky;
-            bottom: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .btn-generate {
-            width: 100%;
-            background: #2d2de0;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .btn-generate:hover {
-            background: #1a1adc;
-        }
-
-        .btn-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 6px;
-        }
-
-        .btn-sub {
-            background: #f5f6fa;
-            color: #1a1a2e;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 9px 4px;
-            font-size: 11px;
-            font-weight: 500;
-            font-family: inherit;
-            cursor: pointer;
-            transition: background 0.15s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-        }
-
-        .btn-sub:hover {
-            background: #e8e8f5;
-            border-color: #c0c0e0;
-        }
-
-        .btn-sub .icon {
-            font-size: 15px;
-        }
-
-        .btn-sub .label {
-            font-size: 10px;
-            color: #6b7280;
-        }
-
-        /* 토스트 */
-        .toast {
-            position: fixed;
-            bottom: 28px;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: #1a1a2e;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            opacity: 0;
-            transition: opacity 0.2s, transform 0.2s;
-            pointer-events: none;
-            z-index: 9999;
-            white-space: nowrap;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* ── 미리보기 ── */
-        .preview {
-            flex: 1;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding: 40px 32px;
-            overflow-y: auto;
-        }
-
-        /* ── 포스터 ── */
-        .poster {
-            width: 480px;
-            background: #f5f6fa;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
-            flex-shrink: 0;
-        }
-
-        .poster-header {
-            background: linear-gradient(135deg, #1a1adc 0%, #4444ee 100%);
-            padding: 28px 28px 24px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .poster-header::before {
-            content: '';
-            position: absolute;
-            top: -40px;
-            right: -40px;
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.04);
-            pointer-events: none;
-        }
-
-        .poster-header::after {
-            content: '';
-            position: absolute;
-            bottom: -30px;
-            left: -20px;
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
-            pointer-events: none;
-        }
-
-        .p-org-tag {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.15);
-            color: rgba(255, 255, 255, 0.95);
-            font-size: 11px;
-            font-weight: 500;
-            padding: 4px 14px;
-            border-radius: 20px;
-            margin-bottom: 16px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .p-event-label {
-            font-size: 9.5px;
-            letter-spacing: 3px;
-            color: #a0a0ff;
-            margin-bottom: 8px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .p-main-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: #fff;
-            line-height: 1.25;
-            margin-bottom: 6px;
-            position: relative;
-            z-index: 1;
-            white-space: pre-line;
-        }
-
-        .p-subtitle {
-            font-size: 12px;
-            color: rgba(192, 192, 255, 0.9);
-            margin-bottom: 16px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .p-info-row {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .p-info-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-        }
-
-        .p-info-label {
-            font-size: 10px;
-            font-weight: 600;
-            color: #a0a0ff;
-            min-width: 28px;
-            padding-top: 1px;
-            flex-shrink: 0;
-        }
-
-        .p-info-value {
-            font-size: 12px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.92);
-            line-height: 1.5;
-        }
-
-        .p-divider {
-            height: 1px;
-            background: linear-gradient(to right, #2d2de0, transparent);
-            opacity: 0.25;
-            margin: 0 28px;
-        }
-
-        .p-program-section {
-            padding: 20px 28px 28px;
-        }
-
-        .p-section-label {
-            font-size: 9px;
-            letter-spacing: 2px;
-            color: #2d2de0;
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-
-        .p-section-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1a1a2e;
-            margin-bottom: 12px;
-        }
-
-        .p-table {
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid #e5e7eb;
-        }
-
-        .p-table-header {
-            display: grid;
-            grid-template-columns: 38px 1fr 90px;
-            background: #2d2de0;
-            padding: 8px 0;
-        }
-
-        .p-table-header span {
-            font-size: 10px;
-            font-weight: 500;
-            color: #fff;
-            text-align: center;
-        }
-
-        .p-table-header span:nth-child(2) {
-            text-align: left;
-            padding-left: 10px;
-        }
-
-        .p-table-body .p-row {
-            display: grid;
-            grid-template-columns: 38px 1fr 90px;
-            border-top: 1px solid #e5e7eb;
-            min-height: 48px;
-            align-items: center;
-        }
-
-        .p-table-body .p-row:nth-child(odd) {
-            background: #f9fafb;
-        }
-
-        .p-table-body .p-row:nth-child(even) {
-            background: #fff;
-        }
-
-        .p-table-body .p-row:first-child {
-            background: #eeeeff;
-            border-left: 3px solid #2d2de0;
-        }
-
-        .p-row-no {
-            font-size: 12px;
-            font-weight: 700;
-            color: #2d2de0;
-            text-align: center;
-        }
-
-        .p-row-content {
-            padding: 8px 10px;
-            border-left: 1px solid #e5e7eb;
-            border-right: 1px solid #e5e7eb;
-        }
-
-        .p-row-content strong {
-            display: block;
-            font-size: 11px;
-            font-weight: 600;
-            color: #1a1a2e;
-            margin-bottom: 2px;
-        }
-
-        .p-row-content span {
-            font-size: 9.5px;
-            color: #6b7280;
-        }
-
-        .p-row-speaker {
-            padding: 0 8px;
-            text-align: center;
-        }
-
-        .p-row-speaker strong {
-            display: block;
-            font-size: 10px;
-            font-weight: 600;
-            color: #1a1a2e;
-        }
-
-        .p-row-speaker span {
-            font-size: 9px;
-            color: #6b7280;
-        }
-
-        @media print {
-            .editor {
-                display: none;
-            }
-
-            .preview {
-                padding: 0;
-            }
-
-            .poster {
-                box-shadow: none;
-                border-radius: 0;
-            }
-
-            body {
-                background: white;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세미나 포스터 템플릿</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: #f0f0f5;
+    min-height: 100vh;
+  }
+  .app { display: flex; min-height: 100vh; }
+
+  /* ── 왼쪽 편집 패널 ── */
+  .editor {
+    width: 340px; flex-shrink: 0;
+    background: #fff; border-right: 1px solid #e5e7eb;
+    display: flex; flex-direction: column;
+    height: 100vh; position: sticky; top: 0; overflow-y: auto;
+  }
+  .editor-header {
+    padding: 18px 20px 14px; border-bottom: 1px solid #e5e7eb;
+    background: #fff; position: sticky; top: 0; z-index: 10;
+  }
+  .editor-header h2 { font-size: 15px; font-weight: 700; color: #1a1a2e; margin-bottom: 2px; }
+  .editor-header p  { font-size: 11px; color: #6b7280; }
+  .editor-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 20px; flex: 1; }
+
+  .field-group h3 {
+    font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
+    color: #2d2de0; margin-bottom: 10px;
+  }
+  .field { margin-bottom: 10px; }
+  .field label { display: block; font-size: 11px; font-weight: 500; color: #374151; margin-bottom: 4px; }
+  .field input, .field textarea {
+    width: 100%; border: 1px solid #e5e7eb; border-radius: 6px;
+    padding: 7px 10px; font-size: 12px; color: #1a1a2e;
+    font-family: inherit; outline: none; transition: border-color 0.15s; resize: none;
+  }
+  .field input:focus, .field textarea:focus { border-color: #2d2de0; }
+
+  /* 프로그램 행 */
+  .program-rows { display: flex; flex-direction: column; gap: 8px; }
+  .program-row {
+    background: #f9fafb; border: 1px solid #e5e7eb;
+    border-radius: 8px; padding: 10px;
+  }
+  .program-row-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+  .row-num {
+    width: 20px; height: 20px; background: #2d2de0; color: #fff;
+    border-radius: 50%; font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .program-row-header span { font-size: 11px; font-weight: 600; color: #374151; flex: 1; }
+  .btn-del-row {
+    background: none; border: none; cursor: pointer;
+    color: #9ca3af; font-size: 15px; line-height: 1; padding: 0 2px;
+    transition: color 0.15s;
+  }
+  .btn-del-row:hover { color: #ef4444; }
+  .program-row input {
+    width: 100%; border: 1px solid #e5e7eb; border-radius: 5px;
+    padding: 5px 8px; font-size: 11px; font-family: inherit;
+    outline: none; background: #fff; margin-bottom: 5px;
+  }
+  .program-row input:last-child { margin-bottom: 0; }
+  .program-row input:focus { border-color: #2d2de0; }
+  .program-row input::placeholder { color: #9ca3af; }
+
+  /* 추가 버튼 */
+  .btn-add-row {
+    width: 100%; background: #f0f0ff;
+    border: 1.5px dashed #a0a0e0; border-radius: 8px;
+    padding: 10px; font-size: 12px; font-weight: 500;
+    color: #2d2de0; font-family: inherit; cursor: pointer;
+    transition: background 0.15s; margin-top: 4px;
+  }
+  .btn-add-row:hover { background: #e0e0fa; }
+
+  /* 하단 버튼 */
+  .editor-footer {
+    padding: 14px 20px; border-top: 1px solid #e5e7eb;
+    background: #fff; position: sticky; bottom: 0;
+    display: flex; flex-direction: column; gap: 7px;
+  }
+  .btn-generate {
+    width: 100%; background: #2d2de0; color: #fff; border: none;
+    border-radius: 8px; padding: 12px; font-size: 13px; font-weight: 600;
+    font-family: inherit; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-generate:hover { background: #1a1adc; }
+  .btn-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .btn-sub {
+    background: #f5f6fa; color: #1a1a2e;
+    border: 1px solid #e5e7eb; border-radius: 8px;
+    padding: 9px 4px; font-size: 11px; font-weight: 500;
+    font-family: inherit; cursor: pointer; transition: background 0.15s;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+  }
+  .btn-sub:hover { background: #e8e8f5; border-color: #c0c0e0; }
+  .btn-sub .icon  { font-size: 15px; }
+  .btn-sub .label { font-size: 10px; color: #6b7280; }
+
+  /* 토스트 */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1a1a2e; color: #fff;
+    padding: 10px 20px; border-radius: 20px;
+    font-size: 12px; font-weight: 500;
+    opacity: 0; transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none; z-index: 9999; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── 미리보기 ── */
+  .preview {
+    flex: 1; display: flex; align-items: flex-start;
+    justify-content: center; padding: 40px 32px; overflow-y: auto;
+  }
+
+  /* ── 포스터 ── */
+  .poster {
+    width: 480px; background: #f5f6fa;
+    border-radius: 12px; overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18); flex-shrink: 0;
+  }
+  .poster-header {
+    background: linear-gradient(135deg, #1a1adc 0%, #4444ee 100%);
+    padding: 28px 28px 24px; position: relative; overflow: hidden;
+  }
+  .poster-header::before {
+    content: ''; position: absolute; top: -40px; right: -40px;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: rgba(255,255,255,0.04); pointer-events: none;
+  }
+  .poster-header::after {
+    content: ''; position: absolute; bottom: -30px; left: -20px;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(255,255,255,0.05); pointer-events: none;
+  }
+  .p-org-tag {
+    display: inline-block; background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.95); font-size: 11px; font-weight: 500;
+    padding: 4px 14px; border-radius: 20px; margin-bottom: 16px;
+    position: relative; z-index: 1;
+  }
+  .p-event-label {
+    font-size: 9.5px; letter-spacing: 3px; color: #a0a0ff;
+    margin-bottom: 8px; position: relative; z-index: 1;
+  }
+  .p-main-title {
+    font-size: 28px; font-weight: 700; color: #fff;
+    line-height: 1.25; margin-bottom: 6px;
+    position: relative; z-index: 1; white-space: pre-line;
+  }
+  .p-subtitle {
+    font-size: 14px; font-weight: 600;
+    color: #ffffff;
+    background: rgba(255,255,255,0.12);
+    border-left: 3px solid rgba(255,255,255,0.6);
+    padding: 6px 10px;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 16px; position: relative; z-index: 1;
+    display: inline-block;
+  }
+  .p-info-row { display: flex; flex-direction: column; gap: 6px; position: relative; z-index: 1; }
+  .p-info-item { display: flex; align-items: flex-start; gap: 8px; }
+  .p-info-label { font-size: 10px; font-weight: 600; color: #a0a0ff; min-width: 28px; padding-top: 1px; flex-shrink: 0; }
+  .p-info-value { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.92); line-height: 1.5; }
+  .p-divider { height: 1px; background: linear-gradient(to right, #2d2de0, transparent); opacity: 0.25; margin: 0 28px; }
+  .p-program-section { padding: 20px 28px 28px; }
+  .p-section-label { font-size: 9px; letter-spacing: 2px; color: #2d2de0; font-weight: 500; margin-bottom: 4px; }
+  .p-section-title { font-size: 16px; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; }
+  .p-table { border-radius: 6px; overflow: hidden; border: 1px solid #e5e7eb; }
+  .p-table-header { display: grid; grid-template-columns: 38px 1fr 90px; background: #2d2de0; padding: 8px 0; }
+  .p-table-header span { font-size: 10px; font-weight: 500; color: #fff; text-align: center; }
+  .p-table-header span:nth-child(2) { text-align: left; padding-left: 10px; }
+  .p-table-body .p-row { display: grid; grid-template-columns: 38px 1fr 90px; border-top: 1px solid #e5e7eb; min-height: 48px; align-items: center; }
+  .p-table-body .p-row:nth-child(odd)  { background: #f9fafb; }
+  .p-table-body .p-row:nth-child(even) { background: #fff; }
+  .p-table-body .p-row:first-child { background: #eeeeff; border-left: 3px solid #2d2de0; }
+  .p-row-no { font-size: 12px; font-weight: 700; color: #2d2de0; text-align: center; }
+  .p-row-content { padding: 8px 10px; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; }
+  .p-row-content strong { display: block; font-size: 11px; font-weight: 600; color: #1a1a2e; margin-bottom: 2px; }
+  .p-row-content span { font-size: 9.5px; color: #6b7280; }
+  .p-row-speaker { padding: 0 8px; text-align: center; }
+  .p-row-speaker strong { display: block; font-size: 10px; font-weight: 600; color: #1a1a2e; }
+  .p-row-speaker span { font-size: 9px; color: #6b7280; }
+
+  @media print {
+    .editor { display: none; }
+    .preview { padding: 0; }
+    .poster { box-shadow: none; border-radius: 0; }
+    body { background: white; }
+  }
+</style>
 </head>
-
 <body>
-    <div class="app">
+<div class="app">
 
-        <div class="editor">
-            <div class="editor-header">
-                <h2>포스터 내용 편집</h2>
-                <p>수정 후 포스터 생성 버튼을 눌러주세요</p>
-            </div>
-            <div class="editor-body">
+  <div class="editor">
+    <div class="editor-header">
+      <h2>포스터 내용 편집</h2>
+      <p>수정 후 포스터 생성 버튼을 눌러주세요</p>
+    </div>
+    <div class="editor-body">
 
-                <div class="field-group">
-                    <h3>기본 정보</h3>
-                    <div class="field">
-                        <label>주최 기관명</label>
-                        <input type="text" id="org" value="소부장기술융합포럼">
-                    </div>
-                    <div class="field">
-                        <label>이벤트 레이블 (영문)</label>
-                        <input type="text" id="eventLabel" value="2026 MONTHLY SEMINAR">
-                    </div>
-                    <div class="field">
-                        <label>메인 타이틀</label>
-                        <textarea id="mainTitle" rows="2">2026년 4월
+      <div class="field-group">
+        <h3>기본 정보</h3>
+        <div class="field">
+          <label>주최 기관명</label>
+          <input type="text" id="org" value="소부장기술융합포럼">
+        </div>
+        <div class="field">
+          <label>이벤트 레이블 (영문)</label>
+          <input type="text" id="eventLabel" value="2026 MONTHLY SEMINAR">
+        </div>
+        <div class="field">
+          <label>메인 타이틀</label>
+          <textarea id="mainTitle" rows="2">2026년 4월
 월간세미나</textarea>
-                    </div>
-                    <div class="field">
-                        <label>부제목 / 주제</label>
-                        <input type="text" id="subtitle" value="최근 반도체 관련 소부장 기업 이슈">
-                    </div>
-                </div>
-
-                <div class="field-group">
-                    <h3>일시 · 장소</h3>
-                    <div class="field">
-                        <label>일시</label>
-                        <input type="text" id="date" value="2026년 4월 13일(월) 오후 5시">
-                    </div>
-                    <div class="field">
-                        <label>장소</label>
-                        <input type="text" id="venue" value="티로보틱스 (경기도 오산시 가장산업서북로 103-37)">
-                    </div>
-                </div>
-
-                <div class="field-group">
-                    <h3>프로그램</h3>
-                    <div class="program-rows" id="programRows"></div>
-                    <button class="btn-add-row" onclick="addRow()">+ 프로그램 추가</button>
-                </div>
-
-            </div>
-            <div class="editor-footer">
-                <button class="btn-generate" onclick="generate()">▶ 포스터 생성</button>
-                <div class="btn-row">
-                    <button class="btn-sub" onclick="saveImage()">
-                        <span class="icon">🖼</span>
-                        <span class="label">이미지 저장</span>
-                    </button>
-                    <button class="btn-sub" onclick="copyImage()">
-                        <span class="icon">📋</span>
-                        <span class="label">클립보드 복사</span>
-                    </button>
-                    <button class="btn-sub" onclick="window.print()">
-                        <span class="icon">🖨</span>
-                        <span class="label">인쇄/PDF</span>
-                    </button>
-                </div>
-            </div>
         </div>
-
-        <div class="preview">
-            <div class="poster" id="poster"></div>
+        <div class="field">
+          <label>부제목 / 주제</label>
+          <input type="text" id="subtitle" value="최근 반도체 관련 소부장 기업 이슈">
         </div>
+      </div>
+
+      <div class="field-group">
+        <h3>일시 · 장소</h3>
+        <div class="field">
+          <label>일시</label>
+          <input type="text" id="date" value="2026년 4월 13일(월) 오후 5시">
+        </div>
+        <div class="field">
+          <label>장소</label>
+          <input type="text" id="venue" value="티로보틱스 (경기도 오산시 가장산업서북로 103-37)">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <h3>프로그램</h3>
+        <div class="program-rows" id="programRows"></div>
+        <button class="btn-add-row" onclick="addRow()">+ 프로그램 추가</button>
+      </div>
 
     </div>
-    <div class="toast" id="toast"></div>
+    <div class="editor-footer">
+      <button class="btn-generate" onclick="generate()">▶ 포스터 생성</button>
+      <div class="btn-row">
+        <button class="btn-sub" onclick="saveImage()">
+          <span class="icon">🖼</span>
+          <span class="label">이미지 저장</span>
+        </button>
+        <button class="btn-sub" onclick="copyImage()">
+          <span class="icon">📋</span>
+          <span class="label">클립보드 복사</span>
+        </button>
+        <button class="btn-sub" onclick="window.print()">
+          <span class="icon">🖨</span>
+          <span class="label">인쇄/PDF</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
-    <script>
-        let programs = [
-            { content: '소부장기술융합포럼 / 연구조합 총회', sub: '정기총회 진행', speaker: '', role: '' },
-            { content: '반도체 후공정 설비 동향 및 전망', sub: 'Semiconductor back-end process equipment trend', speaker: '최용원', role: '부사장' },
-            { content: '특허 소송 사례 설명', sub: 'Patent litigation case review', speaker: '김철진 변리사', role: '윌비에스엔티' },
-            { content: '서버 해킹 보안 대책', sub: 'Server hacking security countermeasures', speaker: '박춘식', role: '보안안전 전문가' },
-            { content: '공장 견학', sub: '티로보틱스 시설 투어', speaker: '', role: '' },
-        ];
+  <div class="preview">
+    <div class="poster" id="poster"></div>
+  </div>
 
-        function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+</div>
+<div class="toast" id="toast"></div>
 
-        function buildForm() {
-            const wrap = document.getElementById('programRows');
-            wrap.innerHTML = '';
-            programs.forEach((p, i) => {
-                const div = document.createElement('div');
-                div.className = 'program-row';
-                div.innerHTML = `
+<script>
+  let programs = [
+    { content: '소부장기술융합포럼 / 연구조합 총회', sub: '정기총회 진행',                                        speaker: '',             role: '' },
+    { content: '반도체 후공정 설비 동향 및 전망',     sub: 'Semiconductor back-end process equipment trend', speaker: '최용원',        role: '부사장' },
+    { content: '특허 소송 사례 설명',                sub: 'Patent litigation case review',                 speaker: '김철진 변리사', role: '윌비에스엔티' },
+    { content: '서버 해킹 보안 대책',                sub: 'Server hacking security countermeasures',       speaker: '박춘식',        role: '보안안전 전문가' },
+    { content: '공장 견학',                         sub: '티로보틱스 시설 투어',                              speaker: '',             role: '' },
+  ];
+
+  function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+  function buildForm() {
+    const wrap = document.getElementById('programRows');
+    wrap.innerHTML = '';
+    programs.forEach((p, i) => {
+      const div = document.createElement('div');
+      div.className = 'program-row';
+      div.innerHTML = `
         <div class="program-row-header">
-          <div class="row-num">${i + 1}</div>
-          <span>프로그램 ${i + 1}</span>
+          <div class="row-num">${i+1}</div>
+          <span>프로그램 ${i+1}</span>
           <button class="btn-del-row" onclick="deleteRow(${i})" title="삭제">✕</button>
         </div>
         <input type="text" id="p${i}_content" placeholder="내용 *"           value="${esc(p.content)}">
@@ -660,46 +303,46 @@
         <input type="text" id="p${i}_speaker" placeholder="발표자 (선택)"   value="${esc(p.speaker)}">
         <input type="text" id="p${i}_role"    placeholder="소속/직함 (선택)" value="${esc(p.role)}">
       `;
-                wrap.appendChild(div);
-            });
-        }
+      wrap.appendChild(div);
+    });
+  }
 
-        function addRow() {
-            programs.push({ content: '', sub: '', speaker: '', role: '' });
-            buildForm();
-            // 새 행으로 스크롤
-            const rows = document.querySelectorAll('.program-row');
-            rows[rows.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+  function addRow() {
+    programs.push({ content:'', sub:'', speaker:'', role:'' });
+    buildForm();
+    // 새 행으로 스크롤
+    const rows = document.querySelectorAll('.program-row');
+    rows[rows.length-1].scrollIntoView({ behavior:'smooth', block:'center' });
+  }
 
-        function deleteRow(i) {
-            if (programs.length <= 1) { showToast('최소 1개 이상 필요합니다'); return; }
-            programs.splice(i, 1);
-            buildForm();
-        }
+  function deleteRow(i) {
+    if (programs.length <= 1) { showToast('최소 1개 이상 필요합니다'); return; }
+    programs.splice(i, 1);
+    buildForm();
+  }
 
-        function collectPrograms() {
-            return programs.map((_, i) => ({
-                content: document.getElementById(`p${i}_content`)?.value.trim() || '',
-                sub: document.getElementById(`p${i}_sub`)?.value.trim() || '',
-                speaker: document.getElementById(`p${i}_speaker`)?.value.trim() || '',
-                role: document.getElementById(`p${i}_role`)?.value.trim() || '',
-            }));
-        }
+  function collectPrograms() {
+    return programs.map((_,i) => ({
+      content: document.getElementById(`p${i}_content`)?.value.trim() || '',
+      sub:     document.getElementById(`p${i}_sub`)?.value.trim()     || '',
+      speaker: document.getElementById(`p${i}_speaker`)?.value.trim() || '',
+      role:    document.getElementById(`p${i}_role`)?.value.trim()    || '',
+    }));
+  }
 
-        function generate() {
-            const org = document.getElementById('org').value;
-            const eventLabel = document.getElementById('eventLabel').value;
-            const mainTitle = document.getElementById('mainTitle').value;
-            const subtitle = document.getElementById('subtitle').value;
-            const date = document.getElementById('date').value;
-            const venue = document.getElementById('venue').value;
+  function generate() {
+    const org        = document.getElementById('org').value;
+    const eventLabel = document.getElementById('eventLabel').value;
+    const mainTitle  = document.getElementById('mainTitle').value;
+    const subtitle   = document.getElementById('subtitle').value;
+    const date       = document.getElementById('date').value;
+    const venue      = document.getElementById('venue').value;
 
-            let rowsHTML = '';
-            let no = 1;
-            collectPrograms().forEach(p => {
-                if (!p.content) return;
-                rowsHTML += `
+    let rowsHTML = '';
+    let no = 1;
+    collectPrograms().forEach(p => {
+      if (!p.content) return;
+      rowsHTML += `
         <div class="p-row">
           <div class="p-row-no">${no++}</div>
           <div class="p-row-content">
@@ -708,12 +351,12 @@
           </div>
           <div class="p-row-speaker">
             ${p.speaker ? `<strong>${p.speaker}</strong>` : ''}
-            ${p.role ? `<span>${p.role}</span>` : (!p.speaker ? '<span>—</span>' : '')}
+            ${p.role    ? `<span>${p.role}</span>` : (!p.speaker ? '<span>—</span>' : '')}
           </div>
         </div>`;
-            });
+    });
 
-            document.getElementById('poster').innerHTML = `
+    document.getElementById('poster').innerHTML = `
       <div class="poster-header">
         <div class="p-org-tag">${org}</div>
         <div class="p-event-label">${eventLabel}</div>
@@ -734,53 +377,52 @@
         </div>
       </div>`;
 
-            showToast('포스터가 생성되었습니다 ✓');
+    showToast('포스터가 생성되었습니다 ✓');
+  }
+
+  /* html2canvas 공통 옵션 */
+  const h2cOpts = { scale:2, useCORS:true, backgroundColor:'#f5f6fa', logging:false };
+
+  async function saveImage() {
+    showToast('이미지 생성 중...');
+    try {
+      const canvas = await html2canvas(document.getElementById('poster'), h2cOpts);
+      const a = document.createElement('a');
+      const title = (document.getElementById('mainTitle').value||'세미나포스터').replace(/\n/g,'_').replace(/\s+/g,'_');
+      a.download = `${title}.png`;
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+      showToast('이미지가 저장되었습니다 ✓');
+    } catch { showToast('저장 중 오류가 발생했습니다'); }
+  }
+
+  async function copyImage() {
+    showToast('클립보드에 복사 중...');
+    try {
+      const canvas = await html2canvas(document.getElementById('poster'), h2cOpts);
+      canvas.toBlob(async blob => {
+        try {
+          await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+          showToast('클립보드에 복사되었습니다 ✓');
+        } catch {
+          const url = URL.createObjectURL(blob);
+          window.open(url, '_blank');
+          showToast('새 탭에서 이미지를 우클릭해 복사하세요');
         }
+      }, 'image/png');
+    } catch { showToast('복사 중 오류가 발생했습니다'); }
+  }
 
-        /* html2canvas 공통 옵션 */
-        const h2cOpts = { scale: 2, useCORS: true, backgroundColor: '#f5f6fa', logging: false };
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._t);
+    t._t = setTimeout(() => t.classList.remove('show'), 2400);
+  }
 
-        async function saveImage() {
-            showToast('이미지 생성 중...');
-            try {
-                const canvas = await html2canvas(document.getElementById('poster'), h2cOpts);
-                const a = document.createElement('a');
-                const title = (document.getElementById('mainTitle').value || '세미나포스터').replace(/\n/g, '_').replace(/\s+/g, '_');
-                a.download = `${title}.png`;
-                a.href = canvas.toDataURL('image/png');
-                a.click();
-                showToast('이미지가 저장되었습니다 ✓');
-            } catch { showToast('저장 중 오류가 발생했습니다'); }
-        }
-
-        async function copyImage() {
-            showToast('클립보드에 복사 중...');
-            try {
-                const canvas = await html2canvas(document.getElementById('poster'), h2cOpts);
-                canvas.toBlob(async blob => {
-                    try {
-                        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                        showToast('클립보드에 복사되었습니다 ✓');
-                    } catch {
-                        const url = URL.createObjectURL(blob);
-                        window.open(url, '_blank');
-                        showToast('새 탭에서 이미지를 우클릭해 복사하세요');
-                    }
-                }, 'image/png');
-            } catch { showToast('복사 중 오류가 발생했습니다'); }
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.add('show');
-            clearTimeout(t._t);
-            t._t = setTimeout(() => t.classList.remove('show'), 2400);
-        }
-
-        buildForm();
-        generate();
-    </script>
+  buildForm();
+  generate();
+</script>
 </body>
-
 </html>

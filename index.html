@@ -493,11 +493,6 @@
             background: #fff;
         }
 
-        .p-table-body .p-row:first-child {
-            background: #eeeeff;
-            border-left: 3px solid #2d2de0;
-        }
-
         .p-row-no {
             font-size: 12px;
             font-weight: 700;
@@ -900,12 +895,9 @@
             const COL1 = 38, COL3 = 90;
             const contentX = PAD + COL1, speakerX = W - PAD - COL3;
             rows.forEach((p, i) => {
-                const bg = i === 0 ? '#eeeeff' : (i % 2 === 0 ? '#ffffff' : '#f9fafb');
+                const bg = i % 2 === 0 ? '#f9fafb' : '#ffffff';
                 c.fillStyle = bg;
                 c.fillRect(PAD, y, W - PAD * 2, rowH);
-
-                /* 첫 행 파란 왼쪽 선 */
-                if (i === 0) { c.fillStyle = '#2d2de0'; c.fillRect(PAD, y, 3, rowH); }
 
                 /* 구분선 */
                 c.fillStyle = '#e5e7eb';

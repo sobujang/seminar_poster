@@ -708,14 +708,12 @@
             const venue = document.getElementById('venue').value;
 
             let rowsHTML = '';
-            let no = 1;
-            collectPrograms().forEach(p => {
-                if (!p.content) return;
+            collectPrograms().forEach((p, i) => {
                 rowsHTML += `
         <div class="p-row">
-          <div class="p-row-no">${no++}</div>
+          <div class="p-row-no">${i + 1}</div>
           <div class="p-row-content">
-            <strong>${p.content}</strong>
+            <strong>${p.content || '—'}</strong>
             ${p.sub ? `<span>${p.sub}</span>` : ''}
           </div>
           <div class="p-row-speaker">
@@ -761,7 +759,7 @@
             const subtitle = document.getElementById('subtitle').value;
             const date = document.getElementById('date').value;
             const venue = document.getElementById('venue').value;
-            const rows = collectPrograms().filter(p => p.content);
+            const rows = collectPrograms();
 
             // 가상 캔버스로 높이 시뮬레이션
             const cv_dummy = document.createElement('canvas');
@@ -925,7 +923,8 @@
                 c.font = `600 11px ${font}`;
                 c.fillStyle = '#1a1a2e';
                 c.textAlign = 'left';
-                c.fillText(p.content, contentX + 10, y + (p.sub ? 18 : 28));
+                const mainText = p.content || '—';
+                c.fillText(mainText, contentX + 10, y + (p.sub ? 18 : 28));
                 if (p.sub) {
                     c.font = `400 9px ${font}`;
                     c.fillStyle = '#6b7280';

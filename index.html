@@ -671,15 +671,21 @@
         }
 
         function addRow() {
+            programs = collectPrograms(); // 현재 입력된 내용들을 먼저 저장 (중복 유실 방지)
             programs.push({ content: '', sub: '', speaker: '', role: '' });
             buildForm();
             // 새 행으로 스크롤
-            const rows = document.querySelectorAll('.program-row');
-            rows[rows.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => {
+                const rows = document.querySelectorAll('.program-row');
+                if (rows.length > 0) {
+                    rows[rows.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 10);
         }
 
         function deleteRow(i) {
             if (programs.length <= 1) { showToast('최소 1개 이상 필요합니다'); return; }
+            programs = collectPrograms(); // 현재 입력된 내용들을 저장
             programs.splice(i, 1);
             buildForm();
         }
@@ -757,10 +763,23 @@
             const venue = document.getElementById('venue').value;
             const rows = collectPrograms().filter(p => p.content);
 
-            // 높이 계산
-            const headerH = 240;
+            // 가상 캔버스로 높이 시뮬레이션
+            const cv_dummy = document.createElement('canvas');
+            const c_dummy = cv_dummy.getContext('2d');
+            const h_font = font;
+
+            // 1. 헤더 높이 계산 (실제 드로잉 로직과 동일하게 추적)
+            let currY = PAD;
+            currY += 34; // org 태그 영역
+            currY += 18; // eventLabel
+            const titleLines = mainTitle.split('\n');
+            currY += titleLines.length * 34 + 2; // 메인 타이틀
+            currY += 36; // 부제목 강조 박스
+            currY += 18 * 2; // 일시, 장소 (2줄)
+
+            const headerH = currY + 18; // 헤더 하단 여백 추가
             const dividerH = 1;
-            const sectionH = 56;          // PROGRAM 레이블 + 제목
+            const sectionH = 56;          // PROGRAM 레이블 + 제목 영역
             const tableHdrH = 30;
             const rowH = 48;
             const bottomPad = 28;

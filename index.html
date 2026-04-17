@@ -641,6 +641,10 @@
                         <span class="icon">📋</span>
                         <span class="label">클립보드 복사</span>
                     </button>
+                    <button class="btn-sub" onclick="shareLink()">
+                        <span class="icon">🔗</span>
+                        <span class="label">링크 공유</span>
+                    </button>
                     <button class="btn-sub" onclick="window.print()">
                         <span class="icon">🖨</span>
                         <span class="label">인쇄/PDF</span>
@@ -1104,11 +1108,11 @@
             try {
                 const cv = buildCanvas();
                 cv.toBlob(async blob => {
+                    if (!blob) return;
                     try {
                         await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
                         showToast('클립보드에 복사되었습니다 ✓');
                     } catch {
-                        /* 권한 거부 시 → 새 탭 열기 */
                         const url = URL.createObjectURL(blob);
                         const win = window.open('', '_blank');
                         win.document.write(`<body style="margin:0;background:#111">
@@ -1121,6 +1125,44 @@
             } catch (e) { showToast('오류: ' + e.message); }
         }
 
+        /* ── 공유 기능 ── */
+        function shareLink() {
+            try {
+                const data = {
+                    org: document.getElementById('org').value,
+                    eventLabel: document.getElementById('eventLabel').value,
+                    mainTitle: document.getElementById('mainTitle').value,
+                    subtitle: document.getElementById('subtitle').value,
+                    infoItems: collectInfoItems(),
+                    programs: collectPrograms()
+                };
+                const json = JSON.stringify(data);
+                const hash = btoa(encodeURIComponent(json));
+                const url = window.location.origin + window.location.pathname + '#' + hash;
+
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast('공유 링크가 클립보드에 복사되었습니다 ✓');
+                }).catch(() => {
+                    prompt('아래 링크를 복사하여 공유하세요:', url);
+                });
+            } catch (e) { showToast('공유 실패: ' + e.message); }
+        }
+
+        function loadFromHash() {
+            const hash = window.location.hash.slice(1);
+            if (!hash) return;
+            try {
+                const json = decodeURIComponent(atob(hash));
+                const data = JSON.parse(json);
+                if (data.org) document.getElementById('org').value = data.org;
+                if (data.eventLabel) document.getElementById('eventLabel').value = data.eventLabel;
+                if (data.mainTitle) document.getElementById('mainTitle').value = data.mainTitle;
+                if (data.subtitle) document.getElementById('subtitle').value = data.subtitle;
+                if (data.infoItems) infoItems = data.infoItems;
+                if (data.programs) programs = data.programs;
+            } catch (e) { console.error('Shared data loading failed', e); }
+        }
+
         function showToast(msg) {
             const t = document.getElementById('toast');
             t.textContent = msg;
@@ -1129,6 +1171,7 @@
             t._t = setTimeout(() => t.classList.remove('show'), 2400);
         }
 
+        loadFromHash();
         buildInfoForm();
         buildForm();
         generate();

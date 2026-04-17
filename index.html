@@ -414,7 +414,7 @@
             font-size: 10px;
             font-weight: 600;
             color: #a0a0ff;
-            min-width: 28px;
+            min-width: 48px;
             padding-top: 1px;
             flex-shrink: 0;
         }
@@ -520,8 +520,10 @@
         }
 
         .p-row-speaker {
-            padding: 0 8px;
+            padding: 8px;
             text-align: center;
+            white-space: pre-line;
+            line-height: 1.4;
         }
 
         .p-row-speaker strong {
@@ -532,8 +534,35 @@
         }
 
         .p-row-speaker span {
+            display: block;
             font-size: 9px;
             color: #6b7280;
+        }
+
+        /* 텍스트영역 통일 */
+        .field textarea,
+        .program-row textarea {
+            width: 100%;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 11px;
+            color: #1a1a2e;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s;
+            resize: vertical;
+            min-height: 34px;
+        }
+
+        .program-row textarea {
+            border-radius: 5px;
+            padding: 5px 8px;
+            margin-bottom: 5px;
+        }
+
+        .program-row textarea:last-child {
+            margin-bottom: 0;
         }
 
         @media print {
@@ -707,12 +736,16 @@
         <div class="program-row-header">
           <div class="row-num">${i + 1}</div>
           <span>프로그램 ${i + 1}</span>
-          <button class="btn-del-row" onclick="deleteRow(${i})" title="삭제">✕</button>
+          <div style="display:flex; gap:2px;">
+            <button class="btn-del-row" onclick="moveProgramRow(${i}, -1)" title="위로">↑</button>
+            <button class="btn-del-row" onclick="moveProgramRow(${i}, 1)" title="아래로">↓</button>
+            <button class="btn-del-row" onclick="deleteRow(${i})" title="삭제">✕</button>
+          </div>
         </div>
-        <input type="text" id="p${i}_content" placeholder="내용 *"           value="${esc(p.content)}">
-        <input type="text" id="p${i}_sub"     placeholder="부가 설명 (선택)" value="${esc(p.sub)}">
-        <input type="text" id="p${i}_speaker" placeholder="발표자 (선택)"   value="${esc(p.speaker)}">
-        <input type="text" id="p${i}_role"    placeholder="소속/직함 (선택)" value="${esc(p.role)}">
+        <input type="text" id="p${i}_content" placeholder="내용 *"           value="${esc(p.content)}" style="margin-bottom:5px; width:100%; border:1px solid #e5e7eb; border-radius:5px; padding:5px 8px; font-size:11px;">
+        <input type="text" id="p${i}_sub"     placeholder="부가 설명 (선택)" value="${esc(p.sub)}"     style="margin-bottom:5px; width:100%; border:1px solid #e5e7eb; border-radius:5px; padding:5px 8px; font-size:11px;">
+        <textarea id="p${i}_speaker" placeholder="발표자 (선택, 여러명 가능)" rows="1">${esc(p.speaker)}</textarea>
+        <textarea id="p${i}_role"    placeholder="소속/직함 (선택)"          rows="1">${esc(p.role)}</textarea>
       `;
                 wrap.appendChild(div);
             });
@@ -735,6 +768,14 @@
             if (programs.length <= 1) { showToast('최소 1개 이상 필요합니다'); return; }
             programs = collectPrograms(); // 현재 입력된 내용들을 저장
             programs.splice(i, 1);
+            buildForm();
+        }
+
+        function moveProgramRow(i, dir) {
+            programs = collectPrograms();
+            const target = i + dir;
+            if (target < 0 || target >= programs.length) return;
+            [programs[i], programs[target]] = [programs[target], programs[i]];
             buildForm();
         }
 
@@ -762,17 +803,17 @@
 
             let rowsHTML = '';
             collectPrograms().forEach((p, i) => {
+                const speakerHTML = p.speaker ? `<strong>${esc(p.speaker)}</strong>` : '';
+                const roleHTML = p.role ? `<span>${esc(p.role)}</span>` : (!p.speaker ? '<span>—</span>' : '');
+
                 rowsHTML += `
         <div class="p-row">
           <div class="p-row-no">${i + 1}</div>
           <div class="p-row-content">
-            <strong>${p.content || '—'}</strong>
-            ${p.sub ? `<span>${p.sub}</span>` : ''}
+            <strong>${esc(p.content) || '—'}</strong>
+            ${p.sub ? `<span>${esc(p.sub)}</span>` : ''}
           </div>
-          <div class="p-row-speaker">
-            ${p.speaker ? `<strong>${p.speaker}</strong>` : ''}
-            ${p.role ? `<span>${p.role}</span>` : (!p.speaker ? '<span>—</span>' : '')}
-          </div>
+          <div class="p-row-speaker">${speakerHTML}${roleHTML}</div>
         </div>`;
             });
 
@@ -812,27 +853,34 @@
             const infos = collectInfoItems().filter(it => it.label || it.value);
             const rows = collectPrograms();
 
-            // 가상 캔버스로 높이 시뮬레이션
             const cv_dummy = document.createElement('canvas');
             const c_dummy = cv_dummy.getContext('2d');
-            const h_font = font;
 
-            // 1. 헤더 높이 계산 (실제 드로잉 로직과 동일하게 추적)
+            // 행별 높이 사전 계산
+            const rowHeights = rows.map(p => {
+                const speakerLines = (p.speaker || '').split('\n').length;
+                const roleLines = (p.role || '').split('\n').length;
+                const speakerH = speakerLines * 14 + roleLines * 12 + 16;
+                const contentH = p.sub ? 48 : 40;
+                return Math.max(48, speakerH, contentH);
+            });
+            const tableBodyH = rowHeights.reduce((a, b) => a + b, 0);
+
+            // 1. 헤더 높이 계산
             let currY = PAD;
-            currY += 34; // org 태그 영역
+            currY += 34; // org
             currY += 18; // eventLabel
             const titleLines = mainTitle.split('\n');
-            currY += titleLines.length * 34 + 2; // 메인 타이틀
-            currY += 36; // 부제목 강조 박스
-            currY += infos.length * 18; // 동적 정보 항목들
+            currY += titleLines.length * 34 + 2;
+            currY += 36; // subtitle
+            currY += infos.length * 18;
 
-            const headerH = currY + 18; // 헤더 하단 여백 추가
+            const headerH = currY + 18;
             const dividerH = 1;
-            const sectionH = 56;          // PROGRAM 레이블 + 제목 영역
+            const sectionH = 56;
             const tableHdrH = 30;
-            const rowH = 48;
             const bottomPad = 28;
-            const H = headerH + dividerH + sectionH + tableHdrH + rows.length * rowH + bottomPad;
+            const H = headerH + dividerH + sectionH + tableHdrH + tableBodyH + bottomPad;
 
             const cv = document.createElement('canvas');
             cv.width = W * S;
@@ -899,12 +947,13 @@
 
             /* 일시·장소 등 정보 항목 */
             function infoLine(label, val) {
+                if (!label && !val) return;
                 c.font = `600 10px ${font}`;
                 c.fillStyle = '#a0a0ff';
                 c.fillText(label, PAD, y + 1);
                 c.font = `500 11.5px ${font}`;
                 c.fillStyle = 'rgba(255,255,255,0.92)';
-                c.fillText(val, PAD + 32, y + 1);
+                c.fillText(val, PAD + 50, y + 1);
                 y += 18;
             }
             infos.forEach(item => infoLine(item.label, item.value));
@@ -950,58 +999,73 @@
             const COL1 = 38, COL3 = 90;
             const contentX = PAD + COL1, speakerX = W - PAD - COL3;
             rows.forEach((p, i) => {
+                const h = rowHeights[i];
                 const bg = i % 2 === 0 ? '#f9fafb' : '#ffffff';
                 c.fillStyle = bg;
-                c.fillRect(PAD, y, W - PAD * 2, rowH);
+                c.fillRect(PAD, y, W - PAD * 2, h);
 
                 /* 구분선 */
                 c.fillStyle = '#e5e7eb';
                 c.fillRect(PAD, y, W - PAD * 2, 1);
-                c.fillRect(contentX, y, 1, rowH);
-                c.fillRect(speakerX, y, 1, rowH);
+                c.fillRect(contentX, y, 1, h);
+                c.fillRect(speakerX, y, 1, h);
 
                 /* No */
                 c.font = `700 12px ${font}`;
                 c.fillStyle = '#2d2de0';
                 c.textAlign = 'center';
-                c.fillText(i + 1, PAD + COL1 / 2, y + (p.sub ? 22 : 28));
+                c.fillText(i + 1, PAD + COL1 / 2, y + (h / 2) + 4);
 
                 /* 내용 */
+                c.textAlign = 'left';
                 c.font = `600 11px ${font}`;
                 c.fillStyle = '#1a1a2e';
-                c.textAlign = 'left';
                 const mainText = p.content || '—';
-                c.fillText(mainText, contentX + 10, y + (p.sub ? 18 : 28));
+                const contentTextY = p.sub ? y + (h / 2) - 6 : y + (h / 2) + 4;
+                c.fillText(mainText, contentX + 10, contentTextY);
                 if (p.sub) {
                     c.font = `400 9px ${font}`;
                     c.fillStyle = '#6b7280';
-                    c.fillText(p.sub, contentX + 10, y + 32);
+                    c.fillText(p.sub, contentX + 10, contentTextY + 14);
                 }
 
-                /* 발표자 */
+                /* 발표자 (멀티라인 대응) */
                 c.textAlign = 'center';
                 const midX = speakerX + COL3 / 2;
+                const sLines = (p.speaker || '').split('\n');
+                const rLines = (p.role || '').split('\n');
+
+                let textY = y + (h - (sLines.length * 14 + rLines.length * 12 - 4)) / 2 + 8;
+
                 if (p.speaker) {
                     c.font = `600 10px ${font}`;
                     c.fillStyle = '#1a1a2e';
-                    c.fillText(p.speaker, midX, y + (p.role ? 18 : 28));
-                    if (p.role) {
-                        c.font = `400 9px ${font}`;
-                        c.fillStyle = '#6b7280';
-                        c.fillText(p.role, midX, y + 32);
-                    }
-                } else {
+                    sLines.forEach(line => {
+                        c.fillText(line, midX, textY);
+                        textY += 14;
+                    });
+                } else if (!p.role) {
                     c.font = `400 10px ${font}`;
                     c.fillStyle = '#6b7280';
-                    c.fillText('—', midX, y + 28);
+                    c.fillText('—', midX, y + (h / 2) + 4);
                 }
-                y += rowH;
+
+                if (p.role) {
+                    c.font = `400 9px ${font}`;
+                    c.fillStyle = '#6b7280';
+                    rLines.forEach(line => {
+                        c.fillText(line, midX, textY - 2);
+                        textY += 12;
+                    });
+                }
+
+                y += h;
             });
 
             /* 테이블 외곽 테두리 */
             c.strokeStyle = '#e5e7eb';
             c.lineWidth = 1;
-            c.strokeRect(PAD + 0.5, headerH + sectionH + 0.5, W - PAD * 2 - 1, tableHdrH + rows.length * rowH - 1);
+            c.strokeRect(PAD + 0.5, headerH + sectionH + 0.5, W - PAD * 2 - 1, tableHdrH + tableBodyH - 1);
 
             return cv;
         }

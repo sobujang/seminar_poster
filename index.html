@@ -589,15 +589,9 @@
                 </div>
 
                 <div class="field-group">
-                    <h3>일시 · 장소</h3>
-                    <div class="field">
-                        <label>일시</label>
-                        <input type="text" id="date" value="2026년 4월 13일(월) 오후 5시">
-                    </div>
-                    <div class="field">
-                        <label>장소</label>
-                        <input type="text" id="venue" value="티로보틱스 (경기도 오산시 가장산업서북로 103-37)">
-                    </div>
+                    <h3>일시 · 장소 및 추가 정보</h3>
+                    <div class="info-items" id="infoItems"></div>
+                    <button class="btn-add-row" onclick="addInfoItem()">+ 정보 항목 추가 (참석대상, 주최 등)</button>
                 </div>
 
                 <div class="field-group">
@@ -642,7 +636,66 @@
             { content: '공장 견학', sub: '티로보틱스 시설 투어', speaker: '', role: '' },
         ];
 
+        let infoItems = [
+            { label: '일시', value: '2026년 4월 13일(월) 오후 5시' },
+            { label: '장소', value: '티로보틱스 (경기도 오산시 가장산업서북로 103-37)' }
+        ];
+
         function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+
+        function buildInfoForm() {
+            const wrap = document.getElementById('infoItems');
+            wrap.innerHTML = '';
+            infoItems.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.className = 'info-item-row';
+                div.style.display = 'flex';
+                div.style.gap = '6px';
+                div.style.marginBottom = '8px';
+                div.style.alignItems = 'flex-start';
+                div.innerHTML = `
+                    <div style="flex: 0 0 70px;">
+                        <input type="text" id="infoL_${i}" placeholder="항목명" value="${esc(item.label)}" style="width:100%; border:1px solid #e5e7eb; border-radius:5px; padding:5px 8px; font-size:11px;">
+                    </div>
+                    <div style="flex: 1;">
+                        <input type="text" id="infoV_${i}" placeholder="내용" value="${esc(item.value)}" style="width:100%; border:1px solid #e5e7eb; border-radius:5px; padding:5px 8px; font-size:11px;">
+                    </div>
+                    <div style="display:flex; gap:2px;">
+                        <button class="btn-del-row" onclick="moveInfoItem(${i}, -1)" title="위로">↑</button>
+                        <button class="btn-del-row" onclick="moveInfoItem(${i}, 1)" title="아래로">↓</button>
+                        <button class="btn-del-row" onclick="deleteInfoItem(${i})" title="삭제">✕</button>
+                    </div>
+                `;
+                wrap.appendChild(div);
+            });
+        }
+
+        function addInfoItem() {
+            infoItems = collectInfoItems();
+            infoItems.push({ label: '', value: '' });
+            buildInfoForm();
+        }
+
+        function deleteInfoItem(i) {
+            infoItems = collectInfoItems();
+            infoItems.splice(i, 1);
+            buildInfoForm();
+        }
+
+        function moveInfoItem(i, dir) {
+            infoItems = collectInfoItems();
+            const target = i + dir;
+            if (target < 0 || target >= infoItems.length) return;
+            [infoItems[i], infoItems[target]] = [infoItems[target], infoItems[i]];
+            buildInfoForm();
+        }
+
+        function collectInfoItems() {
+            return infoItems.map((_, i) => ({
+                label: document.getElementById(`infoL_${i}`)?.value.trim() || '',
+                value: document.getElementById(`infoV_${i}`)?.value.trim() || '',
+            }));
+        }
 
         function buildForm() {
             const wrap = document.getElementById('programRows');
@@ -699,8 +752,13 @@
             const eventLabel = document.getElementById('eventLabel').value;
             const mainTitle = document.getElementById('mainTitle').value;
             const subtitle = document.getElementById('subtitle').value;
-            const date = document.getElementById('date').value;
-            const venue = document.getElementById('venue').value;
+            const infos = collectInfoItems();
+
+            let infoHTML = '';
+            infos.forEach(item => {
+                if (!item.label && !item.value) return;
+                infoHTML += `<div class="p-info-item"><span class="p-info-label">${esc(item.label)}</span><span class="p-info-value">${esc(item.value)}</span></div>`;
+            });
 
             let rowsHTML = '';
             collectPrograms().forEach((p, i) => {
@@ -725,8 +783,7 @@
         <div class="p-main-title">${mainTitle}</div>
         <div class="p-subtitle">${subtitle}</div>
         <div class="p-info-row">
-          <div class="p-info-item"><span class="p-info-label">일시</span><span class="p-info-value">${date}</span></div>
-          <div class="p-info-item"><span class="p-info-label">장소</span><span class="p-info-value">${venue}</span></div>
+          ${infoHTML}
         </div>
       </div>
       <div class="p-divider"></div>
@@ -752,8 +809,7 @@
             const eventLabel = document.getElementById('eventLabel').value;
             const mainTitle = document.getElementById('mainTitle').value;
             const subtitle = document.getElementById('subtitle').value;
-            const date = document.getElementById('date').value;
-            const venue = document.getElementById('venue').value;
+            const infos = collectInfoItems().filter(it => it.label || it.value);
             const rows = collectPrograms();
 
             // 가상 캔버스로 높이 시뮬레이션
@@ -768,7 +824,7 @@
             const titleLines = mainTitle.split('\n');
             currY += titleLines.length * 34 + 2; // 메인 타이틀
             currY += 36; // 부제목 강조 박스
-            currY += 18 * 2; // 일시, 장소 (2줄)
+            currY += infos.length * 18; // 동적 정보 항목들
 
             const headerH = currY + 18; // 헤더 하단 여백 추가
             const dividerH = 1;
@@ -841,7 +897,7 @@
             c.fillText(subtitle, PAD + 10, y + 13);
             y += 36;
 
-            /* 일시·장소 */
+            /* 일시·장소 등 정보 항목 */
             function infoLine(label, val) {
                 c.font = `600 10px ${font}`;
                 c.fillStyle = '#a0a0ff';
@@ -851,8 +907,7 @@
                 c.fillText(val, PAD + 32, y + 1);
                 y += 18;
             }
-            infoLine('일시', date);
-            infoLine('장소', venue);
+            infos.forEach(item => infoLine(item.label, item.value));
 
             /* ── 본문 배경 ── */
             c.fillStyle = '#f5f6fa';
@@ -1010,6 +1065,7 @@
             t._t = setTimeout(() => t.classList.remove('show'), 2400);
         }
 
+        buildInfoForm();
         buildForm();
         generate();
     </script>

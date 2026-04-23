@@ -878,7 +878,10 @@
         .p-row-content span {
             font-size: 9.5px;
             color: #6b7280;
+            white-space: pre-line;
+            display: block;
         }
+
 
         .p-row-speaker {
             padding: 8px;
@@ -1203,8 +1206,9 @@
           </div>
         </div>
         <input type="text" id="p${i}_content" placeholder="내용 *"           value="${esc(p.content)}" style="margin-bottom:5px; width:100%; border:1px solid #e5e7eb; border-radius:5px; padding:5px 8px; font-size:11px;">
-        <input type="text" id="p${i}_sub"     placeholder="부가 설명 (선택)" value="${esc(p.sub)}"     style="margin-bottom:5px; width:100%; border:1px solid #e5e7eb; border-radius:5px; padding:5px 8px; font-size:11px;">
+        <textarea id="p${i}_sub"     placeholder="부가 설명 (여러 줄 가능)" style="margin-bottom:5px;">${esc(p.sub)}</textarea>
         <textarea id="p${i}_speaker" placeholder="발표자 (선택, 여러명 가능)" rows="1">${esc(p.speaker)}</textarea>
+
         <textarea id="p${i}_role"    placeholder="소속/직함 (선택)"          rows="1">${esc(p.role)}</textarea>
       `;
                 wrap.appendChild(div);
@@ -1328,9 +1332,11 @@
             const rowHeights = rows.map(p => {
                 const speakerLines = (p.speaker || '').split('\n').length;
                 const roleLines = (p.role || '').split('\n').length;
+                const subLines = (p.sub || '').split('\n').length;
                 const speakerH = speakerLines * 14 + roleLines * 12 + 16;
-                const contentH = p.sub ? 48 : 40;
+                const contentH = 22 + (subLines * 12) + 12;
                 return Math.max(48, speakerH, contentH);
+
             });
             const tableBodyH = rowHeights.reduce((a, b) => a + b, 0);
 
@@ -1495,11 +1501,17 @@
                 const mainText = p.content || '—';
                 const contentTextY = p.sub ? y + (h / 2) - 6 : y + (h / 2) + 4;
                 c.fillText(mainText, contentX + 10, contentTextY);
+                const subLines = (p.sub || '').split('\n');
                 if (p.sub) {
                     c.font = `400 9px ${font}`;
                     c.fillStyle = '#6b7280';
-                    c.fillText(p.sub, contentX + 10, contentTextY + 14);
+                    let subY = contentTextY + 14;
+                    subLines.forEach(line => {
+                        c.fillText(line, contentX + 10, subY);
+                        subY += 11;
+                    });
                 }
+
 
                 /* 발표자 (멀티라인 대응) */
                 c.textAlign = 'center';

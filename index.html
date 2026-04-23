@@ -365,6 +365,20 @@
         }
 
         /* 추가 버튼 */
+        .btn-preset {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 1px #e5e7eb;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-preset:hover {
+            transform: scale(1.1);
+        }
+
         .btn-add-row {
             width: 100%;
             background: #f0f0ff;
@@ -666,11 +680,12 @@
         /* ── 포스터 ── */
         .poster {
             width: 480px;
-            background: #f5f6fa;
-            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            border-radius: 4px;
             overflow: hidden;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
             flex-shrink: 0;
+            user-select: none;
             --p-color: var(--point-color);
         }
 
@@ -963,9 +978,27 @@
 
                 <div class="field-group">
                     <h3>DESIGN THEME</h3>
-                    <div class="field inline">
-                        <label>포인트 컬러 (Point Color)</label>
-                        <input type="color" id="pointColor" value="#2d2de0" oninput="updateTheme()">
+                    <div class="control-group">
+                        <label>DESIGN THEME</label>
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                            <input type="color" id="pointColor" value="#2d2de0" onchange="updateTheme()"
+                                style="width:44px; height:44px; padding:2px;">
+                            <span style="font-size:12px; color:#6b7280;">포인트 컬러 선택</span>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <button class="btn-preset" onclick="setPreset('#1e40af')"
+                                style="background:#1e40af"></button>
+                            <button class="btn-preset" onclick="setPreset('#7c3aed')"
+                                style="background:#7c3aed"></button>
+                            <button class="btn-preset" onclick="setPreset('#db2777')"
+                                style="background:#db2777"></button>
+                            <button class="btn-preset" onclick="setPreset('#059669')"
+                                style="background:#059669"></button>
+                            <button class="btn-preset" onclick="setPreset('#d97706')"
+                                style="background:#d97706"></button>
+                            <button class="btn-preset" onclick="setPreset('#111827')"
+                                style="background:#111827"></button>
+                        </div>
                     </div>
                 </div>
 
@@ -1254,6 +1287,11 @@
             }));
         }
 
+        function setPreset(color) {
+            document.getElementById('pointColor').value = color;
+            updateTheme();
+        }
+
         function generate() {
             const org = document.getElementById('org').value;
             const eventLabel = document.getElementById('eventLabel').value;
@@ -1312,6 +1350,27 @@
             generate();
         }
 
+        function wrapText(ctx, text, maxWidth) {
+            if (!text) return [];
+            const paragraphs = text.split('\n');
+            const lines = [];
+            paragraphs.forEach(p => {
+                const chars = p.split('');
+                let currentLine = '';
+                for (let i = 0; i < chars.length; i++) {
+                    let testLine = currentLine + chars[i];
+                    if (ctx.measureText(testLine).width > maxWidth && i > 0) {
+                        lines.push(currentLine);
+                        currentLine = chars[i];
+                    } else {
+                        currentLine = testLine;
+                    }
+                }
+                lines.push(currentLine);
+            });
+            return lines;
+        }
+
         /* ── Canvas 직접 렌더링 ── */
         function buildCanvas() {
             const pointColor = document.getElementById('pointColor').value;
@@ -1326,37 +1385,50 @@
             const infos = collectInfoItems().filter(it => it.label || it.value);
             const rows = collectPrograms();
 
+            // 너비 사전 정의
+            const COL1 = 40, COL3 = 90;
+            const contentX = PAD + COL1;
+            const contentMaxWidth = W - PAD - COL3 - contentX - 25; // 여유 공간 확보
+
             // 행별 높이 및 텍스트 블록 정보 사전 계산
+            const cv_dummy = document.createElement('canvas');
+            const c_dummy = cv_dummy.getContext('2d');
+            c_dummy.font = `700 12.5px ${font}`;
+
             const rowData = rows.map(p => {
                 const sLines = (p.speaker || '').split('\n').filter(l => l.trim());
                 const rLines = (p.role || '').split('\n').filter(l => l.trim());
-                const cLines = (p.content || '').split('\n').filter(l => l.trim());
-                const subLines = (p.sub || '').split('\n').filter(l => l.trim());
 
-                const speakerBlockH = sLines.length * 14 + rLines.length * 12 + (sLines.length && rLines.length ? 4 : 0);
-                const mainBlockH = (cLines.length * 13) + (subLines.length > 0 ? 8 + subLines.length * 11 : 0);
+                // 줄바꿈 대응 wrapText 적용
+                const cLines = wrapText(c_dummy, p.content, contentMaxWidth);
+                c_dummy.font = `500 10.5px ${font}`;
+                const subLines = wrapText(c_dummy, p.sub, contentMaxWidth);
+                c_dummy.font = `700 12.5px ${font}`; // 리셋
 
-                const h = Math.max(54, speakerBlockH + 24, mainBlockH + 28);
+                // 디자인 비율 조정 (행간 확보)
+                const speakerBlockH = sLines.length * 15 + rLines.length * 13 + (sLines.length && rLines.length ? 5 : 0);
+                const mainBlockH = (cLines.length * 17) + (subLines.length > 0 ? 10 + subLines.length * 14 : 0);
+
+                const h = Math.max(60, speakerBlockH + 28, mainBlockH + 32);
                 return { h, sLines, rLines, cLines, subLines, speakerBlockH, mainBlockH };
             });
-
 
             const tableBodyH = rowData.reduce((a, b) => a + b.h, 0);
 
             // 1. 헤더 높이 계산
             let currY = PAD;
-            currY += 40; // org pill
-            currY += 18; // eventLabel
+            currY += 40;
+            currY += 18;
             const titleLines = mainTitle.split('\n');
             currY += titleLines.length * 34 + 8;
-            currY += 44; // subtitle box
+            currY += 44;
             currY += infos.length * 18;
 
             const headerH = currY + 28;
             const dividerH = 1;
-            const sectionH = 58;
-            const tableHdrH = 34;
-            const bottomPad = 32;
+            const sectionH = 70; // 충분히 확보
+            const tableHdrH = 36;
+            const bottomPad = 50; // QR 들어갈 공간 확보
             const H = headerH + dividerH + sectionH + tableHdrH + tableBodyH + bottomPad;
 
             const cv = document.createElement('canvas');
@@ -1373,15 +1445,14 @@
             c.fillRect(0, 0, W, headerH);
 
             /* 장식 원 */
-            function circle(cx, cy, r, alpha) {
-                c.save();
-                c.globalAlpha = alpha;
-                c.fillStyle = '#fff';
-                c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.fill();
-                c.restore();
+            circle(c, W + 10, -20, 120, 0.05);
+            circle(c, 30, headerH - 10, 70, 0.04);
+
+            function circle(ctx, cx, cy, r, alpha) {
+                ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = '#fff';
+                ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
             }
-            circle(W + 10, -20, 120, 0.05);
-            circle(30, headerH - 10, 70, 0.04);
 
             let y = PAD;
 
@@ -1391,8 +1462,7 @@
             c.fillStyle = 'rgba(255,255,255,0.18)';
             roundRect(c, PAD, y, orgW, 25, 12.5);
             c.fillStyle = '#fff';
-            c.textBaseline = 'middle';
-            c.textAlign = 'left';
+            c.textBaseline = 'middle'; c.textAlign = 'left';
             c.fillText(org, PAD + 13, y + 13);
             y += 40;
 
@@ -1412,8 +1482,7 @@
 
             /* 부제목 강조 박스 */
             c.font = `600 14px ${font}`;
-            const subTextW = c.measureText(subtitle).width;
-            const boxW = Math.min(subTextW + 28, W - PAD * 2);
+            const boxW = Math.min(c.measureText(subtitle).width + 28, W - PAD * 2);
             c.fillStyle = 'rgba(255,255,255,0.12)';
             c.fillRect(PAD, y, boxW, 32);
             c.fillStyle = '#fff';
@@ -1432,95 +1501,85 @@
                 y += 18;
             });
 
-            /* ── 하단 본문 영역 ── */
-            c.fillStyle = '#fff';
-            c.fillRect(0, headerH, W, H - headerH);
+            /* ── 하단 본문 ── */
             c.fillStyle = '#f8f9fd';
             c.fillRect(0, headerH, W, H - headerH);
 
-            /* 상단 미세 구분선 */
-            c.globalAlpha = 0.08;
+            y = headerH + 30;
+            c.font = `800 10.5px ${font}`;
             c.fillStyle = pointColor;
-            c.fillRect(0, headerH, W, 1);
-            c.globalAlpha = 1.0;
-
-            y = headerH + 26;
-            c.font = `800 10px ${font}`;
-            c.fillStyle = pointColor;
-            c.fillText('PROGRAM', PAD, y); y += 18;
-            c.font = `800 18px ${font}`;
+            c.fillText('PROGRAM', PAD, y); y += 20;
+            c.font = `800 20px ${font}`;
             c.fillStyle = '#1a1a2e';
             c.fillText('세부 프로그램', PAD, y); y += 22;
 
             /* 테이블 헤더 */
             c.fillStyle = pointColor;
-            roundRect(c, PAD, y, W - PAD * 2, tableHdrH, 5);
-            c.font = `700 11.5px ${font}`;
+            roundRect(c, PAD, y, W - PAD * 2, tableHdrH, 6);
+            c.font = `700 12px ${font}`;
             c.fillStyle = '#fff';
             c.textAlign = 'center';
             c.fillText('No', PAD + 20, y + tableHdrH / 2 + 0.5);
             c.textAlign = 'left';
-            c.fillText('내용', PAD + 52, y + tableHdrH / 2 + 0.5);
+            c.fillText('내용', PAD + 54, y + tableHdrH / 2 + 0.5);
             c.textAlign = 'center';
             c.fillText('발표자', W - PAD - 45, y + tableHdrH / 2 + 0.5);
             y += tableHdrH;
 
             /* 테이블 본문 행 반복 */
-            const COL1 = 40, COL3 = 90;
-            const contentX = PAD + COL1, speakerX = W - PAD - COL3;
+            const speakerX = W - PAD - COL3;
 
             rows.forEach((p, i) => {
                 const { h, sLines, rLines, cLines, subLines, speakerBlockH, mainBlockH } = rowData[i];
                 c.fillStyle = i % 2 === 0 ? '#fff' : '#f9fbff';
                 c.fillRect(PAD, y, W - PAD * 2, h);
 
-                // 내부 구분선 (희미하게)
+                // 내부 구분선 (디자인 보강: 첫번째 행 라인 제거)
                 c.fillStyle = '#eff1f7';
-                c.fillRect(PAD, y, W - PAD * 2, 1);
+                if (i > 0) c.fillRect(PAD, y, W - PAD * 2, 1);
                 c.fillRect(contentX, y, 1, h);
                 c.fillRect(speakerX, y, 1, h);
 
                 /* 행 번호 */
-                c.font = `800 13px ${font}`;
+                c.font = `800 14px ${font}`;
                 c.fillStyle = pointColor;
                 c.textAlign = 'center';
                 c.fillText(i + 1, PAD + COL1 / 2, y + h / 2 + 1);
 
-                /* 내용 블록 (수직 중앙 정렬) */
+                /* 프로그램 내용 (수직 중앙 정렬 + 향상된 행간) */
                 const contentStartPadding = (h - mainBlockH) / 2;
-                let textY = y + contentStartPadding + 11.5;
+                let textY = y + contentStartPadding + 12;
 
                 c.textAlign = 'left';
-                c.font = `700 12.5px ${font}`;
+                c.font = `700 13px ${font}`;
                 c.fillStyle = '#1a1a2e';
                 cLines.forEach(line => {
-                    c.fillText(line, contentX + 14, textY);
-                    textY += 13.5;
+                    c.fillText(line, contentX + 16, textY);
+                    textY += 17;
                 });
 
                 if (subLines.length > 0) {
-                    textY += 4.5;
-                    c.font = `500 10.5px ${font}`;
+                    textY += 6;
+                    c.font = `500 11px ${font}`;
                     c.fillStyle = '#6b7280';
                     subLines.forEach(line => {
-                        c.fillText(line.trim(), contentX + 14, textY);
-                        textY += 12.5;
+                        c.fillText(line, contentX + 16, textY);
+                        textY += 14;
                     });
                 }
 
-
-                /* 발표자 정보 (수직 중앙 정렬) */
+                /* 발표자 정보 */
                 const speakerStartPadding = (h - speakerBlockH) / 2;
-                let spY = y + speakerStartPadding + 10.5;
+                let spY = y + speakerStartPadding + 11;
                 c.textAlign = 'center';
                 const midX = speakerX + COL3 / 2;
 
                 if (sLines.length > 0) {
-                    c.font = `700 11.5px ${font}`;
+                    c.font = `700 12px ${font}`;
                     c.fillStyle = '#1a1a2e';
                     sLines.forEach(line => {
-                        c.fillText(line.trim(), midX, spY);
-                        spY += 14.5;
+                        c.fillText(line, midX, spY);
+                        spY += 15;
                     });
                 } else if (rLines.length === 0) {
                     c.font = `400 11px ${font}`;
@@ -1530,11 +1589,11 @@
 
                 if (rLines.length > 0) {
                     if (sLines.length > 0) spY += 3;
-                    c.font = `400 10.5px ${font}`;
+                    c.font = `400 11px ${font}`;
                     c.fillStyle = '#7a7f8b';
                     rLines.forEach(line => {
-                        c.fillText(line.trim(), midX, spY);
-                        spY += 13.5;
+                        c.fillText(line, midX, spY);
+                        spY += 14;
                     });
                 }
 
@@ -1544,10 +1603,29 @@
             // 전체 테두리 마무리
             c.strokeStyle = '#eef0f5';
             c.lineWidth = 1;
-            c.strokeRect(PAD, headerH + sectionH + tableHdrH, W - PAD * 2, tableBodyH);
+            c.strokeRect(PAD, headerH + dividerH, W - PAD * 2, H - headerH - dividerH - 20);
+
+            // [Designer Bonus] QR Code 영역
+            c.fillStyle = '#fff';
+            c.fillRect(W - PAD - 44, H - 44 - 15, 44, 44);
+            c.strokeStyle = '#eef0f5';
+            c.strokeRect(W - PAD - 44, H - 44 - 15, 44, 44);
+
+            // 실시간 QR (Placeholder)
+            c.font = `800 6px ${font}`;
+            c.fillStyle = '#cbd5e1';
+            c.textAlign = 'center';
+            c.fillText('SCAN ME', W - PAD - 22, H - 20);
+
+            // 더 풍성한 하단 텍스트
+            c.textAlign = 'left';
+            c.font = `500 9px ${font}`;
+            c.fillStyle = '#94a3b8';
+            c.fillText(`Generated by Seminar Poster Master • ${new Date().toLocaleDateString()}`, PAD, H - 22);
 
             return cv;
         }
+
 
         function roundRect(ctx, x, y, w, h, r) {
             ctx.beginPath();

@@ -26,6 +26,33 @@
             overflow: hidden;
         }
 
+        /* ── 현재 작업 상태 ── */
+        .status-bar {
+            position: fixed;
+            bottom: 20px;
+            right: 24px;
+            z-index: 1001;
+            background: rgba(26, 26, 46, 0.9);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 11px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-bar .dot {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+
         /* ── GitHub UI Elements ── */
         .top-tools {
             position: fixed;
@@ -419,6 +446,98 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
+
+        /* 아카이브 드로어 관리 버튼 */
+        .archive-item {
+            position: relative;
+        }
+
+        .archive-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .archive-item:hover .archive-actions {
+            opacity: 1;
+        }
+
+        .btn-action {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: none;
+            background: #fff;
+            color: #4b5563;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-action:hover {
+            color: #2d2de0;
+            background: #f3f4f6;
+        }
+
+        .btn-action.del:hover {
+            color: #ef4444;
+        }
+
+        /* 저장 모달 확장 */
+        .save-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-save-opt {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-save-opt:hover {
+            border-color: #2d2de0;
+            background: #f9f9ff;
+        }
+
+        .btn-save-opt.primary {
+            background: #2d2de0;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-save-opt .icon {
+            font-size: 18px;
+        }
+
+        .btn-save-opt .text h4 {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .btn-save-opt .text p {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
 
         /* 아카이브 드로어 */
         .archive-drawer {
@@ -855,11 +974,12 @@
                         <span class="icon">🖨</span>
                         <span class="label">인쇄/PDF</span>
                     </button>
-                    <button class="btn-sub" onclick="saveToGitHub()"
+                    <button class="btn-sub" onclick="openSaveModal()"
                         style="grid-column: span 3; background: #e0e0fa; border: 1.5px solid #2d2de033; color: #2d2de0;">
                         <span class="icon">🐙</span>
-                        <span class="label" style="color: #2d2de0; font-weight: 700;">GitHub에 월간 포스터 보관</span>
+                        <span class="label" style="color: #2d2de0; font-weight: 700;">GitHub 아카이브 저장...</span>
                     </button>
+
                 </div>
             </div>
 
@@ -905,6 +1025,43 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal-overlay" id="saveModal">
+            <div class="modal">
+                <h3>포스터 보관하기</h3>
+                <div class="modal-field">
+                    <label>저장할 이름 (파일명)</label>
+                    <input type="text" id="saveFileName" placeholder="예: 2026_04_세미나">
+                </div>
+                <div class="save-options">
+                    <button class="btn-save-opt primary" id="btnSaveNew" onclick="doSave(false)">
+                        <div class="icon">📁</div>
+                        <div class="text">
+                            <h4>새 이름으로 저장</h4>
+                            <p>새로운 아카이브 파일을 생성합니다.</p>
+                        </div>
+                    </button>
+                    <button class="btn-save-opt" id="btnSaveOverwrite" onclick="doSave(true)" style="display:none;">
+                        <div class="icon">✏️</div>
+                        <div class="text">
+                            <h4>기존 파일에 덮어쓰기</h4>
+                            <p id="overwritePathLabel"></p>
+                        </div>
+                    </button>
+                </div>
+                <div class="btn-group">
+                    <button class="btn-close-modal" onclick="closeSaveModal()">취소</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar" id="statusBar">
+            <div class="dot"></div>
+            <span id="currentStatusText">편집 중: 2026_04_세미나</span>
+            <button onclick="resetEditingStatus()"
+                style="background:none; border:none; color:#fff; cursor:pointer; font-size:14px; margin-left:4px;">&times;</button>
+        </div>
+
 
 
         <div class="preview">
@@ -1405,6 +1562,8 @@
 
         /* ── GitHub API Logic ── */
         let ghData = JSON.parse(localStorage.getItem('ghArchiveConfig') || '{}');
+        let currentEditingPath = null;
+        let currentEditingSha = null;
 
         function openConfig() {
             document.getElementById('ghOwner').value = ghData.owner || '';
@@ -1414,6 +1573,27 @@
         }
 
         function closeConfig() { document.getElementById('configModal').style.display = 'none'; }
+
+        function openSaveModal() {
+            const fileNameInput = document.getElementById('saveFileName');
+            if (!fileNameInput.value) {
+                const date = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
+                const title = (document.getElementById('mainTitle').value || '').split('\n')[0].replace(/[^가-힣a-zA-Z0-9]/g, '_');
+                fileNameInput.value = `${date}_${title}`;
+            }
+
+            const btnOverwrite = document.getElementById('btnSaveOverwrite');
+            if (currentEditingPath) {
+                btnOverwrite.style.display = 'flex';
+                document.getElementById('overwritePathLabel').textContent = `${currentEditingPath.split('/').pop().replace('.json', '')} 파일에 수정사항을 반영합니다.`;
+            } else {
+                btnOverwrite.style.display = 'none';
+            }
+
+            document.getElementById('saveModal').style.display = 'flex';
+        }
+
+        function closeSaveModal() { document.getElementById('saveModal').style.display = 'none'; }
 
         function saveConfig() {
             ghData = {
@@ -1439,7 +1619,7 @@
                 method, headers, body: body ? JSON.stringify(body) : null
             });
 
-            if (res.status === 404 && method === 'GET') return null;
+            if (res.status === 404 && (method === 'GET' || method === 'DELETE')) return null;
             if (!res.ok) {
                 const err = await res.json();
                 throw new Error(err.message || 'API 통신 오류');
@@ -1447,7 +1627,11 @@
             return res.json();
         }
 
-        async function saveToGitHub() {
+        async function doSave(overwrite = false) {
+            const fileName = document.getElementById('saveFileName').value.trim();
+            if (!fileName) { showToast('파일 이름을 입력해주세요.'); return; }
+
+            const path = overwrite ? currentEditingPath : `posters/${fileName}.json`;
             const data = {
                 org: document.getElementById('org').value,
                 eventLabel: document.getElementById('eventLabel').value,
@@ -1458,24 +1642,33 @@
                 savedAt: new Date().toISOString()
             };
 
-            const title = data.mainTitle.split('\n')[0].replace(/[^가-힣a-zA-Z0-9]/g, '_');
-            const date = new Date().toISOString().slice(0, 10);
-            const path = `posters/${date}_${title}.json`;
-
-            showToast('데이터 보관 중...');
+            showToast('GitHub 아카이브 저장 중...');
             try {
-                const existing = await fetchGH(`/contents/${path}`);
+                let sha = overwrite ? currentEditingSha : undefined;
+                if (!overwrite) {
+                    const existing = await fetchGH(`/contents/${path}`);
+                    if (existing) {
+                        if (!confirm(`같은 이름의 파일이 이미 존재합니다. 덮어쓰시겠습니까?`)) return;
+                        sha = existing.sha;
+                    }
+                }
+
                 const body = {
-                    message: `Archive: ${title}`,
+                    message: `Archive: ${fileName}`,
                     content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
-                    sha: existing ? existing.sha : undefined
+                    sha: sha
                 };
 
-                await fetchGH(`/contents/${path}`, 'PUT', body);
-                showToast('GitHub 아카이브에 성공적으로 추가되었습니다! ✓');
+                const res = await fetchGH(`/contents/${path}`, 'PUT', body);
+                currentEditingPath = path;
+                currentEditingSha = res.content.sha;
+                updateStatusUI();
+
+                showToast('성공적으로 저장되었습니다! ✓');
+                closeSaveModal();
                 if (document.getElementById('archiveDrawer').classList.contains('open')) loadHistory();
             } catch (e) {
-                showToast('오류: ' + e.message);
+                showToast('저장 실패: ' + e.message);
             }
         }
 
@@ -1491,15 +1684,66 @@
                 }
 
                 const jsonFiles = files.filter(f => f.name.endsWith('.json')).reverse();
-                wrap.innerHTML = jsonFiles.map((f, i) => `
-                    <div class="archive-item" onclick="loadArchivedPoster('${f.path}')">
-                        <div class="date">${f.name.split('_')[0]}</div>
-                        <div class="title">${esc(f.name.split('_').slice(1).join(' ').replace('.json', '')) || '세미나 포스터'}</div>
-                        <div class="meta">탭하여 불러오기</div>
+                wrap.innerHTML = jsonFiles.map((f) => `
+                    <div class="archive-item">
+                        <div onclick="loadArchivedPoster('${f.path}')" style="flex:1;">
+                            <div class="date">DATA</div>
+                            <div class="title">${esc(f.name.replace('.json', ''))}</div>
+                            <div class="meta">탭하여 불러오기</div>
+                        </div>
+                        <div class="archive-actions">
+                            <button class="btn-action" onclick="askRename('${f.path}')" title="이름 수정">✏️</button>
+                            <button class="btn-action del" onclick="askDelete('${f.path}', '${f.sha}')" title="삭제">🗑️</button>
+                        </div>
                     </div>
                 `).join('');
             } catch (e) {
                 wrap.innerHTML = `<p style="color:#ef4444; font-size:12px; text-align:center; padding:20px;">${e.message}</p>`;
+            }
+        }
+
+        async function askDelete(path, sha) {
+            if (!confirm(`정말로 이 포스터 데이터를 삭제하시겠습니까?\n(${path})`)) return;
+            try {
+                showToast('삭제 중...');
+                await fetchGH(`/contents/${path}`, 'DELETE', {
+                    message: `Delete archive: ${path}`,
+                    sha: sha
+                });
+                showToast('삭제되었습니다.');
+                if (currentEditingPath === path) resetEditingStatus();
+                loadHistory();
+            } catch (e) {
+                showToast('삭제 실패: ' + e.message);
+            }
+        }
+
+        async function askRename(path) {
+            const oldName = path.split('/').pop().replace('.json', '');
+            const newName = prompt('새 파일 이름을 입력하세요:', oldName);
+            if (!newName || newName === oldName) return;
+
+            try {
+                showToast('이름 변경 중...');
+                const file = await fetchGH(`/contents/${path}`);
+                const newPath = `posters/${newName}.json`;
+                await fetchGH(`/contents/${newPath}`, 'PUT', {
+                    message: `Rename from ${oldName} to ${newName}`,
+                    content: file.content
+                });
+                await fetchGH(`/contents/${path}`, 'DELETE', {
+                    message: `Remove old file after rename`,
+                    sha: file.sha
+                });
+
+                showToast('이름이 변경되었습니다.');
+                if (currentEditingPath === path) {
+                    currentEditingPath = newPath;
+                    updateStatusUI();
+                }
+                loadHistory();
+            } catch (e) {
+                showToast('변경 실패: ' + e.message);
             }
         }
 
@@ -1508,6 +1752,11 @@
                 showToast('원격 데이터 로드 중...');
                 const file = await fetchGH(`/contents/${path}`);
                 const data = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+
+                currentEditingPath = path;
+                currentEditingSha = file.sha;
+                document.getElementById('saveFileName').value = path.split('/').pop().replace('.json', '');
+                updateStatusUI();
 
                 // 적용
                 document.getElementById('org').value = data.org || '';
@@ -1523,6 +1772,23 @@
             } catch (e) {
                 showToast('불러오기 오류: ' + e.message);
             }
+        }
+
+        function updateStatusUI() {
+            const bar = document.getElementById('statusBar');
+            const text = document.getElementById('currentStatusText');
+            if (currentEditingPath) {
+                bar.style.display = 'flex';
+                text.textContent = `편집 중: ${currentEditingPath.split('/').pop().replace('.json', '')}`;
+            } else {
+                bar.style.display = 'none';
+            }
+        }
+
+        function resetEditingStatus() {
+            currentEditingPath = null;
+            currentEditingSha = null;
+            updateStatusUI();
         }
 
         function toggleArchive() {
@@ -1544,6 +1810,7 @@
         buildForm();
         generate();
     </script>
+
 
 </body>
 

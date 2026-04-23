@@ -2,39 +2,61 @@
   "org": "소부장기술융합연구조합",
   "pointColor": "#0e0075",
   "eventLabel": "2026 SOBUJANG EDUCATION PROGRAM",
-  "mainTitle": "2026년 5월\n실전 원가절감 교육 프로그램",
+  "mainTitle": "2026년 5월 1차\n실전 원가절감 교육 프로그램",
   "subtitle": "기업 경쟁력을 높이는 실전 원가절감 교육",
   "infoItems": [
     {
-      "label": "",
-      "value": ""
+      "label": "일시",
+      "value": "2026년 5월 22일(금) 09:30 ~ 18:30"
     },
     {
-      "label": "",
-      "value": ""
+      "label": "장소",
+      "value": "소부장기술융합포럼 판교연구소(경기도 성남시 분당구 판교역로 146번길 17)"
+    },
+    {
+      "label": "주최/주관",
+      "value": "소부장기술융합연구조합"
+    },
+    {
+      "label": "입금계좌",
+      "value": "하나은행 404-910018-29204 소부장기술융합연구조합"
+    },
+    {
+      "label": "신청방법",
+      "value": "교육신청페이지에서 신청(https://sobujang.github.io/edu-sobujang)"
+    },
+    {
+      "label": "문의",
+      "value": "사무국(sobujang@starc.co.kr)"
     }
   ],
   "programs": [
     {
-      "content": "",
+      "content": "기업 혁신의 이유",
       "sub": "",
       "speaker": "",
       "role": ""
     },
     {
-      "content": "",
+      "content": "삼성전자의 제품/제조 가치혁신 사례",
       "sub": "",
       "speaker": "",
       "role": ""
     },
     {
-      "content": "",
+      "content": "원가절감 방법 - Value Engineering 이해",
       "sub": "",
       "speaker": "",
       "role": ""
     },
     {
-      "content": "",
+      "content": "원가절감 Process 별 방법 : ※ 간단한 실습 병행",
+      "sub": "- 1단계. Value Engineering 사전준비\n  · VE 대상 선정 및 기준\n  · Teams 구성\n\n- 2단계. Information Phase: 정보수집\n· 고객요구사항 명확화 방법 : ERRC/Value Curve\n· 원가절감과 관련된 정보 수집 분석 방법\n· 원가절감 대상 제품/설비/제조의 구조 분석 방법\n· 기준 모델/기준재료비 및 목표재료비 설정 방법",
+      "speaker": "",
+      "role": ""
+    },
+    {
+      "content": "점심",
       "sub": "",
       "speaker": "",
       "role": ""
@@ -46,5 +68,5 @@
       "role": ""
     }
   ],
-  "savedAt": "2026-04-23T06:12:14.700Z"
+  "savedAt": "2026-04-23T12:02:14.542Z"
 }

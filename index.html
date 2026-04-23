@@ -1039,8 +1039,32 @@
                     <button class="btn-add-row" onclick="addInfoItem()">+ 정보 항목 추가 (참석대상, 주최 등)</button>
                 </div>
 
-                <div class="field-group">
-                    <h3>프로그램</h3>
+                <div class="field-group" id="programControl">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <label style="margin-bottom:0;">PROGRAM</label>
+                        <button class="btn-archive-toggle" onclick="toggleArchive()" title="아카이브">📂 아카이브</button>
+                    </div>
+
+                    <!-- 테이블 헤더 수정을 위한 필드 추가 -->
+                    <div
+                        style="display:grid; grid-template-columns: 1fr 2fr 1.5fr; gap:8px; margin-bottom:12px; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
+                        <div>
+                            <label style="font-size:10px; color:#64748b; margin-bottom:4px;">Header 1</label>
+                            <input type="text" id="h_no" value="No" oninput="generate()"
+                                style="width:100%; padding:4px 6px; font-size:11px; border:1px solid #e2e8f0; border-radius:4px;">
+                        </div>
+                        <div>
+                            <label style="font-size:10px; color:#64748b; margin-bottom:4px;">Header 2</label>
+                            <input type="text" id="h_content" value="내용" oninput="generate()"
+                                style="width:100%; padding:4px 6px; font-size:11px; border:1px solid #e2e8f0; border-radius:4px;">
+                        </div>
+                        <div>
+                            <label style="font-size:10px; color:#64748b; margin-bottom:4px;">Header 3</label>
+                            <input type="text" id="h_speaker" value="발표자" oninput="generate()"
+                                style="width:100%; padding:4px 6px; font-size:11px; border:1px solid #e2e8f0; border-radius:4px;">
+                        </div>
+                    </div>
+
                     <div class="program-rows" id="programRows"></div>
                     <button class="btn-add-row" onclick="addRow()">+ 프로그램 추가</button>
                 </div>
@@ -1308,7 +1332,12 @@
             const subtitle = document.getElementById('subtitle').value;
             const infos = collectInfoItems();
 
+            const h1 = document.getElementById('h_no').value || 'No';
+            const h2 = document.getElementById('h_content').value || '내용';
+            const h3 = document.getElementById('h_speaker').value || '발표자';
+
             let infoHTML = '';
+
             infos.forEach(item => {
                 if (!item.label && !item.value) return;
                 infoHTML += `<div class="p-info-item"><span class="p-info-label">${esc(item.label)}</span><span class="p-info-value">${esc(item.value)}</span></div>`;
@@ -1350,7 +1379,11 @@
         <div class="p-section-label">PROGRAM</div>
         <div class="p-section-title">세부 프로그램</div>
         <div class="p-table">
-          <div class="p-table-header"><span>No</span><span>내용</span><span>발표자</span></div>
+          <div class="p-table-header">
+            <span style="text-align:center;">${esc(h1)}</span>
+            <span style="text-align:center;">${esc(h2)}</span>
+            <span style="text-align:center;">${esc(h3)}</span>
+          </div>
           <div class="p-table-body">${rowsHTML}</div>
         </div>
       </div>`;
@@ -1400,7 +1433,12 @@
             const infos = collectInfoItems().filter(it => it.label || it.value);
             const rows = collectPrograms();
 
+            const h1 = document.getElementById('h_no').value || 'No';
+            const h2 = document.getElementById('h_content').value || '내용';
+            const h3 = document.getElementById('h_speaker').value || '발표자';
+
             // 너비 사전 정의
+
             const COL1 = 40, COL3 = 90;
             const contentX = PAD + COL1;
             const contentMaxWidth = W - PAD - COL3 - contentX - 25; // 여유 공간 확보
@@ -1534,11 +1572,12 @@
             c.font = `700 12px ${font}`;
             c.fillStyle = '#fff';
             c.textAlign = 'center';
-            c.fillText('No', PAD + 20, y + tableHdrH / 2 + 0.5);
-            c.textAlign = 'left';
-            c.fillText('내용', PAD + 54, y + tableHdrH / 2 + 0.5);
-            c.textAlign = 'center';
-            c.fillText('발표자', W - PAD - 45, y + tableHdrH / 2 + 0.5);
+            c.fillText(h1, PAD + 20, y + tableHdrH / 2 + 0.5);
+
+            // 중앙 정렬 (가운데 컬럼 너비 계산)
+            const midContentX = contentX + (W - PAD - COL3 - contentX) / 2;
+            c.fillText(h2, midContentX, y + tableHdrH / 2 + 0.5);
+            c.fillText(h3, W - PAD - 45, y + tableHdrH / 2 + 0.5);
             y += tableHdrH;
 
             /* 테이블 본문 행 반복 */
@@ -1804,9 +1843,15 @@
                 pointColor: document.getElementById('pointColor').value,
                 eventLabel: document.getElementById('eventLabel').value,
                 mainTitle: document.getElementById('mainTitle').value,
-
                 subtitle: document.getElementById('subtitle').value,
                 infoItems: collectInfoItems(),
+                tableHeaders: [
+                    document.getElementById('h_no').value,
+                    document.getElementById('h_content').value,
+                    document.getElementById('h_speaker').value
+                ],
+                useQR: document.getElementById('useQR').checked,
+                qrData: document.getElementById('qrData').value,
                 programs: collectPrograms(),
                 savedAt: new Date().toISOString()
             };
@@ -1942,7 +1987,21 @@
                 if (data.infoItems) { infoItems = data.infoItems; buildInfoForm(); }
                 if (data.programs) { programs = data.programs; buildForm(); }
 
+                if (data.tableHeaders) {
+                    document.getElementById('h_no').value = data.tableHeaders[0];
+                    document.getElementById('h_content').value = data.tableHeaders[1];
+                    document.getElementById('h_speaker').value = data.tableHeaders[2];
+                }
+
+                if (data.useQR !== undefined) {
+                    document.getElementById('useQR').checked = data.useQR;
+                }
+                if (data.qrData !== undefined) {
+                    document.getElementById('qrData').value = data.qrData;
+                }
+
                 generate();
+
                 toggleArchive();
                 showToast('포스터 데이터가 복구되었습니다 ✓');
             } catch (e) {

@@ -1333,7 +1333,7 @@
             document.getElementById('poster').innerHTML = `
       <div class="poster-header">
         ${document.getElementById('useQR').checked ?
-                    `<img class="p-qr" src="https://chart.googleapis.com/chart?cht=qr&chs=100x100&chl=${encodeURIComponent(document.getElementById('qrData').value || window.location.href)}" 
+                    `<img class="p-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(document.getElementById('qrData').value || window.location.href)}" 
                 style="position:absolute; top:28px; right:28px; width:52px; height:52px; padding:4px; background:rgba(255,255,255,0.9); border-radius:4px;">` : ''
                 }
         <div class="p-org-tag">${org}</div>
@@ -1624,7 +1624,8 @@
                 const qrVal = document.getElementById('qrData').value || 'https://github.com';
                 const qrImg = new Image();
                 qrImg.crossOrigin = "anonymous";
-                qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=${encodeURIComponent(qrVal)}`;
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrVal)}`;
+
 
                 // 이미지가 로드된 후 그려야함으로, saveImage/copyImage 호출 시점에서 로드 상태를 체크하거나
                 // 여기서는 placeholder를 그려두고 실제 렌더링 시에는 준비된 이미지 사용

@@ -31,13 +31,20 @@
     },
     {
       "label": "신청방법",
-      "value": "교육신청페이지에서 신청(https://sobujang.github.io/edu-sobujang)"
+      "value": "QR스캔 or 교육신청페이지(https://sobujang.github.io/edu-sobujang)"
     },
     {
       "label": "문의",
       "value": "사무국(sobujang@starc.co.kr)"
     }
   ],
+  "tableHeaders": [
+    "No",
+    "내용",
+    "소요시간"
+  ],
+  "useQR": true,
+  "qrData": "https://sobujang.github.io/edu-sobujang",
   "programs": [
     {
       "content": "1. 기업 혁신의 이유\n2. 삼성전자의 제품/제조 가치혁신 사례\n3. 원가절감 방법 - Value Engineering 이해\n4. 원가절감 Process 별 방법 : ※ 간단한 실습 병행\n-1단계. Value Engineering 사전준비\n  · VE 대상 선정 및 기준\n  · Teams 구성",
@@ -70,5 +77,5 @@
       "role": ""
     }
   ],
-  "savedAt": "2026-04-23T13:05:26.677Z"
+  "savedAt": "2026-04-23T13:19:32.848Z"
 }

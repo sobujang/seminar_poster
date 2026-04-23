@@ -1386,8 +1386,9 @@
         }
 
         /* ── Canvas 직접 렌더링 ── */
-        function buildCanvas() {
+        async function buildCanvas() {
             const pointColor = document.getElementById('pointColor').value;
+
             const S = 2; // 해상도 배율
             const W = 480, PAD = 28;
             const font = "'Apple SD Gothic Neo','Noto Sans KR',sans-serif";
@@ -1621,18 +1622,22 @@
 
             // [Designer Bonus] QR Code 처리
             if (document.getElementById('useQR').checked) {
-                const qrVal = document.getElementById('qrData').value || 'https://github.com';
+                const qrVal = document.getElementById('qrData').value || window.location.href;
                 const qrImg = new Image();
                 qrImg.crossOrigin = "anonymous";
                 qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrVal)}`;
 
+                // 이미지 로드 대기
+                await new Promise((resolve) => {
+                    qrImg.onload = resolve;
+                    qrImg.onerror = resolve; // 에러 시에도 진행
+                });
 
-                // 이미지가 로드된 후 그려야함으로, saveImage/copyImage 호출 시점에서 로드 상태를 체크하거나
-                // 여기서는 placeholder를 그려두고 실제 렌더링 시에는 준비된 이미지 사용
                 c.fillStyle = '#fff';
                 c.fillRect(W - PAD - 52, PAD, 52, 52);
                 c.drawImage(qrImg, W - PAD - 50, PAD + 2, 48, 48);
             }
+
 
             // 더 풍성한 하단 텍스트
             c.textAlign = 'left';
@@ -1659,10 +1664,10 @@
             ctx.fill();
         }
 
-        function saveImage() {
+        async function saveImage() {
             showToast('이미지 생성 중...');
             try {
-                const cv = buildCanvas();
+                const cv = await buildCanvas();
                 const a = document.createElement('a');
                 const title = (document.getElementById('mainTitle').value || '세미나포스터')
                     .replace(/\n/g, '_').replace(/\s+/g, '_');
@@ -1676,7 +1681,7 @@
         async function copyImage() {
             showToast('클립보드에 복사 중...');
             try {
-                const cv = buildCanvas();
+                const cv = await buildCanvas();
                 cv.toBlob(async blob => {
                     if (!blob) return;
                     try {
@@ -1694,6 +1699,7 @@
                 }, 'image/png');
             } catch (e) { showToast('오류: ' + e.message); }
         }
+
 
         /* ── 공유 기능 ── */
         function shareLink() {

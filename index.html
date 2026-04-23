@@ -172,6 +172,13 @@
             color: #4b5563;
         }
 
+        /* ── 컬러 변수 ── */
+        :root {
+            --point-color: #2d2de0;
+            --point-dark: #1a1adc;
+        }
+
+
 
         /* ── 왼쪽 편집 패널 ── */
         .editor {
@@ -227,6 +234,26 @@
         .field {
             margin-bottom: 10px;
         }
+
+        .field.inline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .field.inline label {
+            margin-bottom: 0;
+        }
+
+        .field.inline input[type="color"] {
+            width: 44px;
+            height: 28px;
+            padding: 0;
+            border: 1px solid #e5e7eb;
+            cursor: pointer;
+        }
+
 
         .field label {
             display: block;
@@ -641,14 +668,16 @@
             overflow: hidden;
             box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
             flex-shrink: 0;
+            --p-color: var(--point-color);
         }
 
         .poster-header {
-            background: linear-gradient(135deg, #1a1adc 0%, #4444ee 100%);
+            background: linear-gradient(135deg, var(--p-color) 0%, #1a1a2e 150%);
             padding: 28px 28px 24px;
             position: relative;
             overflow: hidden;
         }
+
 
         .poster-header::before {
             content: '';
@@ -922,7 +951,16 @@
             <div class="editor-body">
 
                 <div class="field-group">
+                    <h3>DESIGN THEME</h3>
+                    <div class="field inline">
+                        <label>포인트 컬러 (Point Color)</label>
+                        <input type="color" id="pointColor" value="#2d2de0" oninput="updateTheme()">
+                    </div>
+                </div>
+
+                <div class="field-group">
                     <h3>기본 정보</h3>
+
                     <div class="field">
                         <label>주최 기관명</label>
                         <input type="text" id="org" value="소부장기술융합포럼">
@@ -1255,9 +1293,17 @@
             showToast('포스터가 생성되었습니다 ✓');
         }
 
+        function updateTheme() {
+            const color = document.getElementById('pointColor').value;
+            document.documentElement.style.setProperty('--point-color', color);
+            generate();
+        }
+
         /* ── Canvas 직접 렌더링 ── */
         function buildCanvas() {
+            const pointColor = document.getElementById('pointColor').value;
             const S = 2; // 해상도 배율
+
             const W = 480, PAD = 28;
             const font = "'Apple SD Gothic Neo','Noto Sans KR',sans-serif";
 
@@ -1305,10 +1351,11 @@
 
             /* ── 헤더 배경 그라디언트 ── */
             const hg = c.createLinearGradient(0, 0, W, headerH);
-            hg.addColorStop(0, '#1a1adc');
-            hg.addColorStop(1, '#4444ee');
+            hg.addColorStop(0, pointColor);
+            hg.addColorStop(1, '#1a1a2e');
             c.fillStyle = hg;
             c.fillRect(0, 0, W, headerH);
+
 
             /* 장식 원 */
             function circle(cx, cy, r, alpha) {
@@ -1387,9 +1434,10 @@
             /* PROGRAM 레이블 */
             y = headerH + 20;
             c.font = `500 9px ${font}`;
-            c.fillStyle = '#2d2de0';
+            c.fillStyle = pointColor;
             c.fillText('PROGRAM', PAD, y);
             y += 16;
+
 
             /* 섹션 타이틀 */
             c.font = `700 16px ${font}`;
@@ -1398,8 +1446,9 @@
             y += 20;
 
             /* 테이블 헤더 */
-            c.fillStyle = '#2d2de0';
+            c.fillStyle = pointColor;
             c.fillRect(PAD, y, W - PAD * 2, tableHdrH);
+
             c.font = `500 10px ${font}`;
             c.fillStyle = '#fff';
             c.textAlign = 'center';
@@ -1427,9 +1476,10 @@
 
                 /* No */
                 c.font = `700 12px ${font}`;
-                c.fillStyle = '#2d2de0';
+                c.fillStyle = pointColor;
                 c.textAlign = 'center';
                 c.fillText(i + 1, PAD + COL1 / 2, y + (h / 2) + 4);
+
 
                 /* 내용 */
                 c.textAlign = 'left';
@@ -1636,8 +1686,10 @@
             const path = overwrite ? currentEditingPath : `posters/${fileName}.json`;
             const data = {
                 org: document.getElementById('org').value,
+                pointColor: document.getElementById('pointColor').value,
                 eventLabel: document.getElementById('eventLabel').value,
                 mainTitle: document.getElementById('mainTitle').value,
+
                 subtitle: document.getElementById('subtitle').value,
                 infoItems: collectInfoItems(),
                 programs: collectPrograms(),
@@ -1764,7 +1816,12 @@
 
                 // 적용
                 document.getElementById('org').value = data.org || '';
+                if (data.pointColor) {
+                    document.getElementById('pointColor').value = data.pointColor;
+                    document.documentElement.style.setProperty('--point-color', data.pointColor);
+                }
                 document.getElementById('eventLabel').value = data.eventLabel || '';
+
                 document.getElementById('mainTitle').value = data.mainTitle || '';
                 document.getElementById('subtitle').value = data.subtitle || '';
                 if (data.infoItems) { infoItems = data.infoItems; buildInfoForm(); }

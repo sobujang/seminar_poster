@@ -870,10 +870,11 @@
         .p-row-content strong {
             display: block;
             font-size: 11px;
-            font-weight: 600;
             color: #1a1a2e;
             margin-bottom: 2px;
+            white-space: pre-line;
         }
+
 
         .p-row-content span {
             font-size: 9.5px;
@@ -1205,9 +1206,10 @@
             <button class="btn-del-row" onclick="deleteRow(${i})" title="삭제">✕</button>
           </div>
         </div>
-        <input type="text" id="p${i}_content" placeholder="내용 *"           value="${esc(p.content)}" style="margin-bottom:5px; width:100%; border:1px solid #e5e7eb; border-radius:5px; padding:5px 8px; font-size:11px;">
+        <textarea id="p${i}_content" placeholder="내용 *"           style="margin-bottom:5px;">${esc(p.content)}</textarea>
         <textarea id="p${i}_sub"     placeholder="부가 설명 (여러 줄 가능)" style="margin-bottom:5px;">${esc(p.sub)}</textarea>
         <textarea id="p${i}_speaker" placeholder="발표자 (선택, 여러명 가능)" rows="1">${esc(p.speaker)}</textarea>
+
 
         <textarea id="p${i}_role"    placeholder="소속/직함 (선택)"          rows="1">${esc(p.role)}</textarea>
       `;
@@ -1274,8 +1276,8 @@
         <div class="p-row">
           <div class="p-row-no">${i + 1}</div>
           <div class="p-row-content">
-            <strong>${esc(p.content) || '—'}</strong>
-            ${p.sub ? `<span>${esc(p.sub)}</span>` : ''}
+            <strong>${esc(p.content).replace(/\n/g, '<br>') || '—'}</strong>
+            ${p.sub ? `<span>${esc(p.sub).replace(/\n/g, '<br>')}</span>` : ''}
           </div>
           <div class="p-row-speaker">${speakerHTML}${roleHTML}</div>
         </div>`;
@@ -1328,17 +1330,16 @@
             const rowData = rows.map(p => {
                 const sLines = (p.speaker || '').split('\n').filter(l => l.trim());
                 const rLines = (p.role || '').split('\n').filter(l => l.trim());
+                const cLines = (p.content || '').split('\n').filter(l => l.trim());
                 const subLines = (p.sub || '').split('\n').filter(l => l.trim());
 
-                // 발표자 블록 높이
                 const speakerBlockH = sLines.length * 14 + rLines.length * 12 + (sLines.length && rLines.length ? 4 : 0);
-
-                // 본문 블록 높이 (메인 텍스트 18px + 여백 6px + 서브 텍스트들)
-                const mainBlockH = 18 + (subLines.length > 0 ? 6 + subLines.length * 11 : 0);
+                const mainBlockH = (cLines.length * 13) + (subLines.length > 0 ? 8 + subLines.length * 11 : 0);
 
                 const h = Math.max(54, speakerBlockH + 24, mainBlockH + 28);
-                return { h, sLines, rLines, subLines, speakerBlockH, mainBlockH };
+                return { h, sLines, rLines, cLines, subLines, speakerBlockH, mainBlockH };
             });
+
 
             const tableBodyH = rowData.reduce((a, b) => a + b.h, 0);
 
@@ -1469,7 +1470,7 @@
             const contentX = PAD + COL1, speakerX = W - PAD - COL3;
 
             rows.forEach((p, i) => {
-                const { h, sLines, rLines, subLines, speakerBlockH, mainBlockH } = rowData[i];
+                const { h, sLines, rLines, cLines, subLines, speakerBlockH, mainBlockH } = rowData[i];
                 c.fillStyle = i % 2 === 0 ? '#fff' : '#f9fbff';
                 c.fillRect(PAD, y, W - PAD * 2, h);
 
@@ -1485,17 +1486,20 @@
                 c.textAlign = 'center';
                 c.fillText(i + 1, PAD + COL1 / 2, y + h / 2 + 1);
 
-                /* 프로그램 내용 (수직 중앙 정렬) */
+                /* 내용 블록 (수직 중앙 정렬) */
                 const contentStartPadding = (h - mainBlockH) / 2;
                 let textY = y + contentStartPadding + 11.5;
 
                 c.textAlign = 'left';
                 c.font = `700 12.5px ${font}`;
                 c.fillStyle = '#1a1a2e';
-                c.fillText(p.content || '—', contentX + 14, textY);
+                cLines.forEach(line => {
+                    c.fillText(line, contentX + 14, textY);
+                    textY += 13.5;
+                });
 
                 if (subLines.length > 0) {
-                    textY += 18;
+                    textY += 4.5;
                     c.font = `500 10.5px ${font}`;
                     c.fillStyle = '#6b7280';
                     subLines.forEach(line => {
@@ -1503,6 +1507,7 @@
                         textY += 12.5;
                     });
                 }
+
 
                 /* 발표자 정보 (수직 중앙 정렬) */
                 const speakerStartPadding = (h - speakerBlockH) / 2;

@@ -172,114 +172,215 @@
             color: #4b5563;
         }
 
-        /* ── 컬러 변수 ── */
-        :root {
-            --point-color: #2d2de0;
-            --point-dark: #1a1adc;
+        .app-container {
+            display: flex;
+            height: 100vh;
+            background: #f1f5f9;
+            overflow: hidden;
         }
 
-
-
-        /* ── 왼쪽 편집 패널 ── */
-        .editor {
-            width: 340px;
-            flex-shrink: 0;
+        /* ── Editor ── */
+        .editor-panel {
+            width: 480px;
             background: #fff;
-            border-right: 1px solid #e5e7eb;
+            border-right: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            position: sticky;
-            top: 0;
-            overflow-y: auto;
-        }
-
-        .editor-header {
-            padding: 18px 20px 14px;
-            border-bottom: 1px solid #e5e7eb;
-            background: #fff;
-            position: sticky;
-            top: 0;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.02);
             z-index: 10;
         }
 
-        .editor-header h2 {
-            font-size: 15px;
-            font-weight: 700;
-            color: #1a1a2e;
-            margin-bottom: 2px;
-        }
-
-        .editor-header p {
-            font-size: 11px;
-            color: #6b7280;
-        }
-
-        .editor-body {
-            padding: 16px 20px;
+        .editor-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid #f1f5f9;
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-header h1 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1e293b;
+            letter-spacing: -0.5px;
+        }
+
+        .editor-content {
             flex: 1;
+            padding: 24px 28px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .field-group {
+            margin-bottom: 32px;
+            animation: fadeIn 0.4s ease-out;
         }
 
         .field-group h3 {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            color: #303090;
-            margin-bottom: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .field-group h3::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #f1f5f9;
         }
 
         .field {
-            margin-bottom: 10px;
+            margin-bottom: 18px;
         }
-
-        .field.inline {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .field.inline label {
-            margin-bottom: 0;
-        }
-
-        .field.inline input[type="color"] {
-            width: 44px;
-            height: 28px;
-            padding: 0;
-            border: 1px solid #e5e7eb;
-            cursor: pointer;
-        }
-
 
         .field label {
             display: block;
-            font-size: 11px;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 8px;
         }
 
         .field input,
         .field textarea {
             width: 100%;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 7px 10px;
-            font-size: 12px;
-            color: #1a1a2e;
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.15s;
-            resize: none;
+            padding: 12px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #1e293b;
+            transition: all 0.2s;
+            background: #fcfdfe;
         }
 
         .field input:focus,
         .field textarea:focus {
-            border-color: #2d2de0;
+            outline: none;
+            border-color: var(--point-color);
+            box-shadow: 0 0 0 3px rgba(45, 45, 224, 0.08);
+            background: #fff;
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 80px;
+            line-height: 1.5;
+        }
+
+        /* ── Preview ── */
+        .preview-panel {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+
+        /* 모바일 그리드 헤더 */
+        .mobile-grid-header {
+            display: grid;
+            grid-template-columns: 1fr 2.5fr 1.5fr;
+            gap: 6px;
+            margin-bottom: 12px;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .mobile-grid-header label {
+            font-size: 9px;
+            color: #64748b;
+            margin-bottom: 4px;
+            display: block;
+            font-weight: 700;
+        }
+
+        .mobile-grid-header input {
+            width: 100%;
+            padding: 6px;
+            font-size: 11px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+        }
+
+        /* 모바일 하단 액션바 */
+        .mobile-action-bar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            padding: 12px 16px;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            gap: 8px;
+        }
+
+        .mobile-action-bar .btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                flex-direction: column;
+                height: auto;
+                overflow: visible;
+                padding-bottom: 70px;
+                /* 모바일 바 공간 */
+            }
+
+            .editor-panel {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .editor-header {
+                padding: 20px;
+            }
+
+            .editor-content {
+                padding: 20px;
+                max-height: none;
+            }
+
+            .preview-panel {
+                padding: 30px 15px;
+            }
+
+            .action-bar {
+                display: none;
+            }
+
+            .mobile-action-bar {
+                display: flex;
+            }
+
+            .poster {
+                width: 100%;
+                max-width: 480px;
+                transform-origin: top center;
+            }
+        }
+
+        /* ── 컬러 변수 ── */
+        :root {
+            --point-color: #2d2de0;
+            --point-dark: #1a1adc;
         }
 
         /* 프로그램 행 */
@@ -397,6 +498,14 @@
 
         .btn-add-row:hover {
             background: #e0e0fa;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            padding: 20px 24px;
+            border-top: 1px solid #f1f5f9;
+            background: #f8fafc;
         }
 
         /* 하단 버튼 */
@@ -945,6 +1054,10 @@
             margin-bottom: 0;
         }
 
+        .program-row textarea:focus {
+            border-color: #2d2de0;
+        }
+
         @media print {
             .editor {
                 display: none;
@@ -967,14 +1080,13 @@
 </head>
 
 <body>
-    <div class="app">
+    <div class="app-container">
 
-        <div class="editor">
+        <div class="editor-panel">
             <div class="editor-header">
-                <h2>포스터 내용 편집</h2>
-                <p>수정 후 포스터 생성 버튼을 눌러주세요</p>
+                <h1>포스터 편집</h1>
             </div>
-            <div class="editor-body">
+            <div class="editor-content">
 
                 <div class="field-group">
                     <h3>DESIGN THEME</h3>
@@ -1045,23 +1157,18 @@
                         <button class="btn-archive-toggle" onclick="toggleArchive()" title="아카이브">📂 아카이브</button>
                     </div>
 
-                    <!-- 테이블 헤더 수정을 위한 필드 추가 -->
-                    <div
-                        style="display:grid; grid-template-columns: 1fr 2fr 1.5fr; gap:8px; margin-bottom:12px; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
+                    <div class="mobile-grid-header">
                         <div>
-                            <label style="font-size:10px; color:#64748b; margin-bottom:4px;">Header 1</label>
-                            <input type="text" id="h_no" value="No" oninput="generate()"
-                                style="width:100%; padding:4px 6px; font-size:11px; border:1px solid #e2e8f0; border-radius:4px;">
+                            <label>H1 (No)</label>
+                            <input type="text" id="h_no" value="No" oninput="generate()">
                         </div>
                         <div>
-                            <label style="font-size:10px; color:#64748b; margin-bottom:4px;">Header 2</label>
-                            <input type="text" id="h_content" value="내용" oninput="generate()"
-                                style="width:100%; padding:4px 6px; font-size:11px; border:1px solid #e2e8f0; border-radius:4px;">
+                            <label>H2 (내용)</label>
+                            <input type="text" id="h_content" value="내용" oninput="generate()">
                         </div>
                         <div>
-                            <label style="font-size:10px; color:#64748b; margin-bottom:4px;">Header 3</label>
-                            <input type="text" id="h_speaker" value="발표자" oninput="generate()"
-                                style="width:100%; padding:4px 6px; font-size:11px; border:1px solid #e2e8f0; border-radius:4px;">
+                            <label>H3 (발표자)</label>
+                            <input type="text" id="h_speaker" value="발표자" oninput="generate()">
                         </div>
                     </div>
 

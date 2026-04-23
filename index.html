@@ -1314,7 +1314,6 @@
         function buildCanvas() {
             const pointColor = document.getElementById('pointColor').value;
             const S = 2; // 해상도 배율
-
             const W = 480, PAD = 28;
             const font = "'Apple SD Gothic Neo','Noto Sans KR',sans-serif";
 
@@ -1325,35 +1324,38 @@
             const infos = collectInfoItems().filter(it => it.label || it.value);
             const rows = collectPrograms();
 
-            const cv_dummy = document.createElement('canvas');
-            const c_dummy = cv_dummy.getContext('2d');
+            // 행별 높이 및 텍스트 블록 정보 사전 계산
+            const rowData = rows.map(p => {
+                const sLines = (p.speaker || '').split('\n').filter(l => l.trim());
+                const rLines = (p.role || '').split('\n').filter(l => l.trim());
+                const subLines = (p.sub || '').split('\n').filter(l => l.trim());
 
-            // 행별 높이 사전 계산
-            const rowHeights = rows.map(p => {
-                const speakerLines = (p.speaker || '').split('\n').length;
-                const roleLines = (p.role || '').split('\n').length;
-                const subLines = (p.sub || '').split('\n').length;
-                const speakerH = speakerLines * 14 + roleLines * 12 + 16;
-                const contentH = 22 + (subLines * 12) + 12;
-                return Math.max(48, speakerH, contentH);
+                // 발표자 블록 높이
+                const speakerBlockH = sLines.length * 14 + rLines.length * 12 + (sLines.length && rLines.length ? 4 : 0);
 
+                // 본문 블록 높이 (메인 텍스트 18px + 여백 6px + 서브 텍스트들)
+                const mainBlockH = 18 + (subLines.length > 0 ? 6 + subLines.length * 11 : 0);
+
+                const h = Math.max(54, speakerBlockH + 24, mainBlockH + 28);
+                return { h, sLines, rLines, subLines, speakerBlockH, mainBlockH };
             });
-            const tableBodyH = rowHeights.reduce((a, b) => a + b, 0);
+
+            const tableBodyH = rowData.reduce((a, b) => a + b.h, 0);
 
             // 1. 헤더 높이 계산
             let currY = PAD;
-            currY += 34; // org
+            currY += 40; // org pill
             currY += 18; // eventLabel
             const titleLines = mainTitle.split('\n');
-            currY += titleLines.length * 34 + 2;
-            currY += 36; // subtitle
+            currY += titleLines.length * 34 + 8;
+            currY += 44; // subtitle box
             currY += infos.length * 18;
 
-            const headerH = currY + 18;
+            const headerH = currY + 28;
             const dividerH = 1;
-            const sectionH = 56;
-            const tableHdrH = 30;
-            const bottomPad = 28;
+            const sectionH = 58;
+            const tableHdrH = 34;
+            const bottomPad = 32;
             const H = headerH + dividerH + sectionH + tableHdrH + tableBodyH + bottomPad;
 
             const cv = document.createElement('canvas');
@@ -1362,13 +1364,12 @@
             const c = cv.getContext('2d');
             c.scale(S, S);
 
-            /* ── 헤더 배경 그라디언트 ── */
+            /* ── 헤더 배경 ── */
             const hg = c.createLinearGradient(0, 0, W, headerH);
             hg.addColorStop(0, pointColor);
-            hg.addColorStop(1, '#1a1a2e');
+            hg.addColorStop(0.85, '#1a1a2e');
             c.fillStyle = hg;
             c.fillRect(0, 0, W, headerH);
-
 
             /* 장식 원 */
             function circle(cx, cy, r, alpha) {
@@ -1378,178 +1379,167 @@
                 c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.fill();
                 c.restore();
             }
-            circle(W - 40, -40, 90, 0.04);
-            circle(60, headerH - 20, 60, 0.05);
+            circle(W + 10, -20, 120, 0.05);
+            circle(30, headerH - 10, 70, 0.04);
 
             let y = PAD;
 
-            /* 기관 태그 pill */
-            c.font = `500 11px ${font}`;
-            const orgW = c.measureText(org).width + 28;
-            c.fillStyle = 'rgba(255,255,255,0.15)';
-            roundRect(c, PAD, y, orgW, 22, 11);
-            c.fillStyle = 'rgba(255,255,255,0.95)';
+            /* 기관 태그 */
+            c.font = `600 11.5px ${font}`;
+            const orgW = c.measureText(org).width + 26;
+            c.fillStyle = 'rgba(255,255,255,0.18)';
+            roundRect(c, PAD, y, orgW, 25, 12.5);
+            c.fillStyle = '#fff';
             c.textBaseline = 'middle';
             c.textAlign = 'left';
-            c.fillText(org, PAD + 14, y + 11);
-            y += 34;
+            c.fillText(org, PAD + 13, y + 13);
+            y += 40;
 
             /* 이벤트 레이블 */
-            c.font = `400 9.5px ${font}`;
-            c.fillStyle = '#a0a0ff';
-            c.letterSpacing = '3px';
-            c.fillText(eventLabel, PAD, y);
+            c.font = `600 9.5px ${font}`;
+            c.fillStyle = 'rgba(255,255,255,0.55)';
+            c.letterSpacing = '2px';
+            c.fillText(eventLabel.toUpperCase(), PAD, y);
             c.letterSpacing = '0px';
             y += 18;
 
             /* 메인 타이틀 */
-            c.font = `700 28px ${font}`;
+            c.font = `800 30px ${font}`;
             c.fillStyle = '#fff';
-            const lines = mainTitle.split('\n');
-            lines.forEach(line => { c.fillText(line, PAD, y); y += 34; });
-            y += 2;
+            titleLines.forEach(line => { c.fillText(line, PAD, y + 15); y += 34; });
+            y += 8;
 
             /* 부제목 강조 박스 */
-            c.font = `600 13px ${font}`;
-            const subW = Math.min(c.measureText(subtitle).width + 20, W - PAD * 2);
+            c.font = `600 14px ${font}`;
+            const subTextW = c.measureText(subtitle).width;
+            const boxW = Math.min(subTextW + 28, W - PAD * 2);
             c.fillStyle = 'rgba(255,255,255,0.12)';
-            c.fillRect(PAD, y, subW, 26);
-            c.fillStyle = 'rgba(255,255,255,0.7)';
-            c.fillRect(PAD, y, 3, 26);
+            c.fillRect(PAD, y, boxW, 32);
             c.fillStyle = '#fff';
-            c.fillText(subtitle, PAD + 10, y + 13);
-            y += 36;
+            c.fillRect(PAD, y, 3.5, 32);
+            c.fillText(subtitle, PAD + 14, y + 16.5);
+            y += 44;
 
-            /* 일시·장소 등 정보 항목 */
-            function infoLine(label, val) {
-                if (!label && !val) return;
-                c.font = `600 10px ${font}`;
-                c.fillStyle = '#a0a0ff';
-                c.fillText(label, PAD, y + 1);
+            /* 정보 항목 리스트 */
+            infos.forEach(item => {
+                c.font = `700 10.5px ${font}`;
+                c.fillStyle = 'rgba(255,255,255,0.5)';
+                c.fillText(item.label, PAD, y + 1);
                 c.font = `500 11.5px ${font}`;
-                c.fillStyle = 'rgba(255,255,255,0.92)';
-                c.fillText(val, PAD + 50, y + 1);
+                c.fillStyle = 'rgba(255,255,255,0.95)';
+                c.fillText(item.value, PAD + 54, y + 1);
                 y += 18;
-            }
-            infos.forEach(item => infoLine(item.label, item.value));
+            });
 
-            /* ── 본문 배경 ── */
-            c.fillStyle = '#f5f6fa';
+            /* ── 하단 본문 영역 ── */
+            c.fillStyle = '#fff';
+            c.fillRect(0, headerH, W, H - headerH);
+            c.fillStyle = '#f8f9fd';
             c.fillRect(0, headerH, W, H - headerH);
 
-            /* 구분선 */
-            const dg = c.createLinearGradient(PAD, 0, W - PAD, 0);
-            dg.addColorStop(0, 'rgba(45,45,224,0.3)');
-            dg.addColorStop(1, 'rgba(45,45,224,0)');
-            c.fillStyle = dg;
-            c.fillRect(PAD, headerH, W - PAD * 2, 1);
-
-            /* PROGRAM 레이블 */
-            y = headerH + 20;
-            c.font = `500 9px ${font}`;
+            /* 상단 미세 구분선 */
+            c.globalAlpha = 0.08;
             c.fillStyle = pointColor;
-            c.fillText('PROGRAM', PAD, y);
-            y += 16;
+            c.fillRect(0, headerH, W, 1);
+            c.globalAlpha = 1.0;
 
-
-            /* 섹션 타이틀 */
-            c.font = `700 16px ${font}`;
+            y = headerH + 26;
+            c.font = `800 10px ${font}`;
+            c.fillStyle = pointColor;
+            c.fillText('PROGRAM', PAD, y); y += 18;
+            c.font = `800 18px ${font}`;
             c.fillStyle = '#1a1a2e';
-            c.fillText('세부 프로그램', PAD, y);
-            y += 20;
+            c.fillText('세부 프로그램', PAD, y); y += 22;
 
             /* 테이블 헤더 */
             c.fillStyle = pointColor;
-            c.fillRect(PAD, y, W - PAD * 2, tableHdrH);
-
-            c.font = `500 10px ${font}`;
+            roundRect(c, PAD, y, W - PAD * 2, tableHdrH, 5);
+            c.font = `700 11.5px ${font}`;
             c.fillStyle = '#fff';
             c.textAlign = 'center';
-            c.fillText('No', PAD + 19, y + 15);
+            c.fillText('No', PAD + 20, y + tableHdrH / 2 + 0.5);
             c.textAlign = 'left';
-            c.fillText('내용', PAD + 48, y + 15);
+            c.fillText('내용', PAD + 52, y + tableHdrH / 2 + 0.5);
             c.textAlign = 'center';
-            c.fillText('발표자', W - PAD - 45, y + 15);
+            c.fillText('발표자', W - PAD - 45, y + tableHdrH / 2 + 0.5);
             y += tableHdrH;
 
-            /* 테이블 행 */
-            const COL1 = 38, COL3 = 90;
+            /* 테이블 본문 행 반복 */
+            const COL1 = 40, COL3 = 90;
             const contentX = PAD + COL1, speakerX = W - PAD - COL3;
+
             rows.forEach((p, i) => {
-                const h = rowHeights[i];
-                const bg = i % 2 === 0 ? '#f9fafb' : '#ffffff';
-                c.fillStyle = bg;
+                const { h, sLines, rLines, subLines, speakerBlockH, mainBlockH } = rowData[i];
+                c.fillStyle = i % 2 === 0 ? '#fff' : '#f9fbff';
                 c.fillRect(PAD, y, W - PAD * 2, h);
 
-                /* 구분선 */
-                c.fillStyle = '#e5e7eb';
+                // 내부 구분선 (희미하게)
+                c.fillStyle = '#eff1f7';
                 c.fillRect(PAD, y, W - PAD * 2, 1);
                 c.fillRect(contentX, y, 1, h);
                 c.fillRect(speakerX, y, 1, h);
 
-                /* No */
-                c.font = `700 12px ${font}`;
+                /* 행 번호 */
+                c.font = `800 13px ${font}`;
                 c.fillStyle = pointColor;
                 c.textAlign = 'center';
-                c.fillText(i + 1, PAD + COL1 / 2, y + (h / 2) + 4);
+                c.fillText(i + 1, PAD + COL1 / 2, y + h / 2 + 1);
 
+                /* 프로그램 내용 (수직 중앙 정렬) */
+                const contentStartPadding = (h - mainBlockH) / 2;
+                let textY = y + contentStartPadding + 11.5;
 
-                /* 내용 */
                 c.textAlign = 'left';
-                c.font = `600 11px ${font}`;
+                c.font = `700 12.5px ${font}`;
                 c.fillStyle = '#1a1a2e';
-                const mainText = p.content || '—';
-                const contentTextY = p.sub ? y + (h / 2) - 6 : y + (h / 2) + 4;
-                c.fillText(mainText, contentX + 10, contentTextY);
-                const subLines = (p.sub || '').split('\n');
-                if (p.sub) {
-                    c.font = `400 9px ${font}`;
+                c.fillText(p.content || '—', contentX + 14, textY);
+
+                if (subLines.length > 0) {
+                    textY += 18;
+                    c.font = `500 10.5px ${font}`;
                     c.fillStyle = '#6b7280';
-                    let subY = contentTextY + 14;
                     subLines.forEach(line => {
-                        c.fillText(line, contentX + 10, subY);
-                        subY += 11;
+                        c.fillText(line.trim(), contentX + 14, textY);
+                        textY += 12.5;
                     });
                 }
 
-
-                /* 발표자 (멀티라인 대응) */
+                /* 발표자 정보 (수직 중앙 정렬) */
+                const speakerStartPadding = (h - speakerBlockH) / 2;
+                let spY = y + speakerStartPadding + 10.5;
                 c.textAlign = 'center';
                 const midX = speakerX + COL3 / 2;
-                const sLines = (p.speaker || '').split('\n');
-                const rLines = (p.role || '').split('\n');
 
-                let textY = y + (h - (sLines.length * 14 + rLines.length * 12 - 4)) / 2 + 8;
-
-                if (p.speaker) {
-                    c.font = `600 10px ${font}`;
+                if (sLines.length > 0) {
+                    c.font = `700 11.5px ${font}`;
                     c.fillStyle = '#1a1a2e';
                     sLines.forEach(line => {
-                        c.fillText(line, midX, textY);
-                        textY += 14;
+                        c.fillText(line.trim(), midX, spY);
+                        spY += 14.5;
                     });
-                } else if (!p.role) {
-                    c.font = `400 10px ${font}`;
-                    c.fillStyle = '#6b7280';
-                    c.fillText('—', midX, y + (h / 2) + 4);
+                } else if (rLines.length === 0) {
+                    c.font = `400 11px ${font}`;
+                    c.fillStyle = '#9ca3af';
+                    c.fillText('—', midX, y + h / 2 + 1);
                 }
 
-                if (p.role) {
-                    c.font = `400 9px ${font}`;
-                    c.fillStyle = '#6b7280';
+                if (rLines.length > 0) {
+                    if (sLines.length > 0) spY += 3;
+                    c.font = `400 10.5px ${font}`;
+                    c.fillStyle = '#7a7f8b';
                     rLines.forEach(line => {
-                        c.fillText(line, midX, textY - 2);
-                        textY += 12;
+                        c.fillText(line.trim(), midX, spY);
+                        spY += 13.5;
                     });
                 }
 
                 y += h;
             });
 
-            /* 테이블 외곽 테두리 */
-            c.strokeStyle = '#e5e7eb';
+            // 전체 테두리 마무리
+            c.strokeStyle = '#eef0f5';
             c.lineWidth = 1;
-            c.strokeRect(PAD + 0.5, headerH + sectionH + 0.5, W - PAD * 2 - 1, tableHdrH + tableBodyH - 1);
+            c.strokeRect(PAD, headerH + sectionH + tableHdrH, W - PAD * 2, tableBodyH);
 
             return cv;
         }

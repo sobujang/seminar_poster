@@ -6,6 +6,14 @@
   "subtitle": "기업 경쟁력을 높이는 실전 원가절감 교육",
   "infoItems": [
     {
+      "label": "목적",
+      "value": "기업 스스로 문제를 정의하고 해결할 수 있는 \"자생적 원가혁신 역량 기반 확보\""
+    },
+    {
+      "label": "강사",
+      "value": "박지수 대표(VIPC)"
+    },
+    {
       "label": "일시",
       "value": "2026년 5월 22일(금) 09:30 ~ 18:30"
     },
@@ -14,8 +22,8 @@
       "value": "소부장기술융합포럼 판교연구소(경기도 성남시 분당구 판교역로 146번길 17)"
     },
     {
-      "label": "주최/주관",
-      "value": "소부장기술융합연구조합"
+      "label": "교육비",
+      "value": "1인 20만원(중식 미포함)"
     },
     {
       "label": "입금계좌",
@@ -32,41 +40,35 @@
   ],
   "programs": [
     {
-      "content": "기업 혁신의 이유",
+      "content": "1. 기업 혁신의 이유\n2. 삼성전자의 제품/제조 가치혁신 사례\n3. 원가절감 방법 - Value Engineering 이해\n4. 원가절감 Process 별 방법 : ※ 간단한 실습 병행\n-1단계. Value Engineering 사전준비\n  · VE 대상 선정 및 기준\n  · Teams 구성",
       "sub": "",
-      "speaker": "",
+      "speaker": "1hr",
       "role": ""
     },
     {
-      "content": "삼성전자의 제품/제조 가치혁신 사례",
+      "content": "- 2단계. Information Phase: 정보수집\n· 고객요구사항 명확화 방법 : ERRC/Value Curve\n· 원가절감과 관련된 정보 수집 분석 방법\n· 원가절감 대상 제품/설비/제조의 구조 분석 방법\n· 기준 모델/기준재료비 및 목표재료비 설정 방법",
       "sub": "",
-      "speaker": "",
-      "role": ""
-    },
-    {
-      "content": "원가절감 방법 - Value Engineering 이해",
-      "sub": "",
-      "speaker": "",
-      "role": ""
-    },
-    {
-      "content": "원가절감 Process 별 방법 : ※ 간단한 실습 병행",
-      "sub": "- 1단계. Value Engineering 사전준비\n  · VE 대상 선정 및 기준\n  · Teams 구성\n\n- 2단계. Information Phase: 정보수집\n· 고객요구사항 명확화 방법 : ERRC/Value Curve\n· 원가절감과 관련된 정보 수집 분석 방법\n· 원가절감 대상 제품/설비/제조의 구조 분석 방법\n· 기준 모델/기준재료비 및 목표재료비 설정 방법\n\n- 3단계. Function Analysis Phase: 기능분석\n· 기능정의 및 분석 방법\n· 원가절감 여지 분석 방법\n· 원가절감 대상 우선순위 선정 방법\n\n- 4단계. Creative Phase: 원가절감 아이디어 발상\n- 5단계. Evaluation Phase: 원가절감 아이디어 평가\n- 6단계. Development Phase: 원가절감 아이디어 구체화\n- 7단계. Design Application Proposal: 원가절감 아이디어 확정",
-      "speaker": "",
+      "speaker": "2hr",
       "role": ""
     },
     {
       "content": "점심",
       "sub": "",
-      "speaker": "",
+      "speaker": "1hr",
       "role": ""
     },
     {
-      "content": "",
+      "content": "- 3단계. Function Analysis Phase: 기능분석\n· 기능정의 및 분석 방법\n· 원가절감 여지 분석 방법\n· 원가절감 대상 우선순위 선정 방법",
       "sub": "",
-      "speaker": "",
+      "speaker": "3hr",
+      "role": ""
+    },
+    {
+      "content": "- 4단계. Creative Phase: 원가절감 아이디어 발상\n- 5단계. Evaluation Phase: 원가절감 아이디어 평가\n- 6단계. Development Phase: 원가절감 아이디어 구체화\n- 7단계. Design Application Proposal: 원가절감 아이디어 확정",
+      "sub": "",
+      "speaker": "2hr",
       "role": ""
     }
   ],
-  "savedAt": "2026-04-23T12:28:38.600Z"
+  "savedAt": "2026-04-23T12:48:18.193Z"
 }

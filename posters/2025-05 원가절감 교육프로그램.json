@@ -41,7 +41,7 @@
   "tableHeaders": [
     "No",
     "내용",
-    "발표자"
+    "소요시간"
   ],
   "useQR": true,
   "qrData": "https://sobujang.github.io/edu-sobujang",
@@ -77,5 +77,5 @@
       "role": ""
     }
   ],
-  "savedAt": "2026-04-23T13:16:14.028Z"
+  "savedAt": "2026-04-23T13:16:36.649Z"
 }

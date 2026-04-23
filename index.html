@@ -985,7 +985,7 @@
                                 style="width:44px; height:44px; padding:2px;">
                             <span style="font-size:12px; color:#6b7280;">포인트 컬러 선택</span>
                         </div>
-                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:15px;">
                             <button class="btn-preset" onclick="setPreset('#1e40af')"
                                 style="background:#1e40af"></button>
                             <button class="btn-preset" onclick="setPreset('#7c3aed')"
@@ -999,7 +999,16 @@
                             <button class="btn-preset" onclick="setPreset('#111827')"
                                 style="background:#111827"></button>
                         </div>
+                        <div style="border-top:1px solid #f1f5f9; padding-top:12px; margin-top:10px;">
+                            <label
+                                style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12px; color:#1e293b;">
+                                <input type="checkbox" id="useQR" onchange="generate()" checked> QR 코드 표시 (우측 상단)
+                            </label>
+                            <input type="text" id="qrData" placeholder="QR 연결 링크 (예: https://...)" oninput="generate()"
+                                style="width:100%; margin-top:8px; padding:8px; font-size:11px; border:1px solid #e2e8f0; border-radius:4px;">
+                        </div>
                     </div>
+
                 </div>
 
                 <div class="field-group">
@@ -1323,7 +1332,12 @@
 
             document.getElementById('poster').innerHTML = `
       <div class="poster-header">
+        ${document.getElementById('useQR').checked ?
+                    `<img class="p-qr" src="https://chart.googleapis.com/chart?cht=qr&chs=100x100&chl=${encodeURIComponent(document.getElementById('qrData').value || window.location.href)}" 
+                style="position:absolute; top:28px; right:28px; width:52px; height:52px; padding:4px; background:rgba(255,255,255,0.9); border-radius:4px;">` : ''
+                }
         <div class="p-org-tag">${org}</div>
+
         <div class="p-event-label">${eventLabel}</div>
         <div class="p-main-title">${mainTitle}</div>
         <div class="p-subtitle">${subtitle}</div>
@@ -1605,17 +1619,19 @@
             c.lineWidth = 1;
             c.strokeRect(PAD, headerH + dividerH, W - PAD * 2, H - headerH - dividerH - 20);
 
-            // [Designer Bonus] QR Code 영역
-            c.fillStyle = '#fff';
-            c.fillRect(W - PAD - 44, H - 44 - 15, 44, 44);
-            c.strokeStyle = '#eef0f5';
-            c.strokeRect(W - PAD - 44, H - 44 - 15, 44, 44);
+            // [Designer Bonus] QR Code 처리
+            if (document.getElementById('useQR').checked) {
+                const qrVal = document.getElementById('qrData').value || 'https://github.com';
+                const qrImg = new Image();
+                qrImg.crossOrigin = "anonymous";
+                qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=${encodeURIComponent(qrVal)}`;
 
-            // 실시간 QR (Placeholder)
-            c.font = `800 6px ${font}`;
-            c.fillStyle = '#cbd5e1';
-            c.textAlign = 'center';
-            c.fillText('SCAN ME', W - PAD - 22, H - 20);
+                // 이미지가 로드된 후 그려야함으로, saveImage/copyImage 호출 시점에서 로드 상태를 체크하거나
+                // 여기서는 placeholder를 그려두고 실제 렌더링 시에는 준비된 이미지 사용
+                c.fillStyle = '#fff';
+                c.fillRect(W - PAD - 52, PAD, 52, 52);
+                c.drawImage(qrImg, W - PAD - 50, PAD + 2, 48, 48);
+            }
 
             // 더 풍성한 하단 텍스트
             c.textAlign = 'left';

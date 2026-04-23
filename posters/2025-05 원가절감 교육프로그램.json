@@ -2,7 +2,7 @@
   "org": "소부장기술융합연구조합",
   "pointColor": "#0e0075",
   "eventLabel": "2026 SOBUJANG EDUCATION PROGRAM",
-  "mainTitle": "2026년 5월\n실전 원가절감 교육 프로그램",
+  "mainTitle": "2026년 5월 1차\n실전 원가절감 교육 프로그램",
   "subtitle": "기업 경쟁력을 높이는 실전 원가절감 교육",
   "infoItems": [
     {
@@ -51,7 +51,7 @@
     },
     {
       "content": "원가절감 Process 별 방법 : ※ 간단한 실습 병행",
-      "sub": "- 1단계. Value Engineering 사전준비\n  VE 대상 선정 및 기준\n  Teams 구성\n\n- 2단계. Information Phase: 정보수집\n고객요구사항 명확화 방법 : ERRC/Value Curve\n원가절감과 관련된 정보 수집 분석 방법\n원가절감 대상 제품/설비/제조의 구조 분석 방법\n기준 모델/기준재료비 및 목표재료비 설정 방법",
+      "sub": "- 1단계. Value Engineering 사전준비\n  · VE 대상 선정 및 기준\n  · Teams 구성\n\n- 2단계. Information Phase: 정보수집\n· 고객요구사항 명확화 방법 : ERRC/Value Curve\n· 원가절감과 관련된 정보 수집 분석 방법\n· 원가절감 대상 제품/설비/제조의 구조 분석 방법\n· 기준 모델/기준재료비 및 목표재료비 설정 방법",
       "speaker": "",
       "role": ""
     },
@@ -68,5 +68,5 @@
       "role": ""
     }
   ],
-  "savedAt": "2026-04-23T08:34:48.178Z"
+  "savedAt": "2026-04-23T12:02:14.542Z"
 }

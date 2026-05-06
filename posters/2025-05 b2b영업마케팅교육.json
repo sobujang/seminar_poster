@@ -1,0 +1,93 @@
+{
+  "org": "소부장기술융합연구조합",
+  "pointColor": "#5d21c4",
+  "eventLabel": "2026 SOBUJANG EDUCATION PROGRAM",
+  "mainTitle": "2026년 5월 2차\n소부장 기업에 최적화된 \nAI 기반 B2B영업 마케팅 실전 교육",
+  "subtitle": "업무 비효율 빛 문서작업 시간 획기적 개선",
+  "infoItems": [
+    {
+      "label": "강사",
+      "value": "소부장기술융합포럼 김태식 교육전문위원(전 한양대/삼성전자)"
+    },
+    {
+      "label": "",
+      "value": "AI콘텐츠연구소 정장식 소장(前 포스코DX/CJ올리브네트웍스)"
+    },
+    {
+      "label": "일시",
+      "value": "2026년 5월 29일(금) 09:30 ~ 18:30"
+    },
+    {
+      "label": "장소",
+      "value": "소부장기술융합포럼 판교연구소(경기도 성남시 분당구 판교역로 146번길 17)"
+    },
+    {
+      "label": "교육대상",
+      "value": "영업직군 임직원(영업/영업관리/마케팅/영업기획 등)"
+    },
+    {
+      "label": "교육비",
+      "value": "1인 20만원(중식 미포함)"
+    },
+    {
+      "label": "준비사항",
+      "value": "노트북 지참(필수 : 실습교육위함)"
+    },
+    {
+      "label": "입금계좌",
+      "value": "하나은행 404-910018-29204 소부장기술융합연구조합"
+    },
+    {
+      "label": "신청방법",
+      "value": "QR스캔 or 교육신청페이지(https://sobujang.github.io/edu-sobujang)"
+    },
+    {
+      "label": "문의",
+      "value": "사무국(sobujang@starc.co.kr)"
+    },
+    {
+      "label": "주최",
+      "value": "소부장기술융합포럼/연구조합"
+    }
+  ],
+  "tableHeaders": [
+    "No",
+    "내용",
+    "강사"
+  ],
+  "useQR": true,
+  "qrData": "https://sobujang.github.io/edu-sobujang",
+  "programs": [
+    {
+      "content": "B2B 영업 혁신",
+      "sub": "소재 · 부품 ·  장비 B2B 영업의 혁신전략(ABM)",
+      "speaker": "김태식 교수",
+      "role": ""
+    },
+    {
+      "content": "영업업무AI 활용기법",
+      "sub": "AI로 앞서가는 영업 생산성 : 스마트워크 실전 전략",
+      "speaker": "김태식 교수",
+      "role": ""
+    },
+    {
+      "content": "점심",
+      "sub": "",
+      "speaker": "",
+      "role": ""
+    },
+    {
+      "content": "AI 활용 시연 및 실습",
+      "sub": "- 영업 문서 및 기술 문서 작성\n- 고객 커뮤니케이션 & 팔로업 이메일\n- 영업활동 기록 및 정리 보고서",
+      "speaker": "정장식 연구소장",
+      "role": ""
+    },
+    {
+      "content": "과정 평가",
+      "sub": "",
+      "speaker": "",
+      "role": ""
+    }
+  ],
+  "savedAt": "2026-05-06T01:11:21.855Z"
+}

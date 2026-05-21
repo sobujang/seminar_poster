@@ -11,7 +11,11 @@
     },
     {
       "label": "장소",
-      "value": "아주대학교 팔달관 419호(경기도 수원시 영통구 월드컵로 206 아주대학교 팔달관)"
+      "value": "아주대학교 팔달관 419호"
+    },
+    {
+      "label": "",
+      "value": "(경기도 수원시 영통구 월드컵로 206 아주대학교 팔달관)"
     },
     {
       "label": "참석대상",
@@ -27,32 +31,38 @@
     "내용",
     "발표자"
   ],
-  "useQR": true,
+  "useQR": false,
   "qrData": "",
   "programs": [
     {
-      "content": "유리기판 동향 및 추진 현황 (30분)",
+      "content": "AI기반 기구 설계 및 도면 자동화",
       "sub": "",
-      "speaker": "아큐레이저\n나노코어\n영창로보테크",
-      "role": ""
+      "speaker": "홍석무 교수",
+      "role": "공주대학교"
     },
     {
-      "content": "TGV 기반구축과제 진행 현황 (10분)",
+      "content": "",
       "sub": "",
-      "speaker": "한국공학대 외",
-      "role": ""
+      "speaker": "",
+      "role": "DND"
     },
     {
-      "content": "반도체 소부장 산업기술 R&D 투자방향 (10분)",
+      "content": "",
       "sub": "",
-      "speaker": "이정호 PD",
-      "role": ""
+      "speaker": "",
+      "role": "토마스케이블"
     },
     {
-      "content": "한국공학대 공동기기원 투어 (30분)",
+      "content": "",
       "sub": "",
-      "speaker": "한국공학대",
-      "role": ""
+      "speaker": "",
+      "role": "HRS코리아"
+    },
+    {
+      "content": "",
+      "sub": "",
+      "speaker": "",
+      "role": "넥슨전자"
     },
     {
       "content": "석식 네트워킹",
@@ -61,5 +71,5 @@
       "role": ""
     }
   ],
-  "savedAt": "2026-05-21T01:52:01.345Z"
+  "savedAt": "2026-05-21T01:57:28.080Z"
 }

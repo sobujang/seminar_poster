@@ -3,7 +3,7 @@
   "pointColor": "#2d2de0",
   "eventLabel": "2026 MONTHLY SEMINAR",
   "mainTitle": "2026년 7월\n월간세미나",
-  "subtitle": "최신 PAI 및 로봇기술에 대한 동향 ",
+  "subtitle": "최신 PAI 및 로봇기술 동향 ",
   "infoItems": [
     {
       "label": "일정",
@@ -26,6 +26,10 @@
       "value": "소부장기술융합포럼"
     },
     {
+      "label": "후원",
+      "value": "가천대학교 반도체특성화대팍지원사업단"
+    },
+    {
       "label": "참가비",
       "value": "무료 : 기업회원은 2인 (추가시 인당 55,000원, 부가세포함)"
     }
@@ -39,15 +43,15 @@
   "qrData": "",
   "programs": [
     {
-      "content": "최신 PAI 및 로봇기술에 대한 동향",
-      "sub": "",
-      "speaker": "이준현 부사장",
-      "role": ""
-    },
-    {
       "content": "하노버멧세 휴머노이드 분석",
       "sub": "",
       "speaker": "최용원 부사장",
+      "role": ""
+    },
+    {
+      "content": "최신 PAI 및 로봇기술 동향",
+      "sub": "",
+      "speaker": "이준현 부사장",
       "role": ""
     },
     {
@@ -57,5 +61,5 @@
       "role": ""
     }
   ],
-  "savedAt": "2026-06-19T00:12:51.782Z"
+  "savedAt": "2026-06-19T00:50:33.227Z"
 }

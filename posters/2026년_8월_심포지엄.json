@@ -3,15 +3,47 @@
   "pointColor": "#2d2de0",
   "eventLabel": "2026 SBJ Forum Symposium",
   "mainTitle": "2026년 8월\n소부장기술융합포럼 심포지엄",
-  "subtitle": "최근 반도체 관련 소부장 기업 이슈",
+  "subtitle": " PKG/CPO세미나 & AI 기업 적용 사례",
   "infoItems": [
     {
-      "label": "",
-      "value": ""
+      "label": "일시",
+      "value": "2026년 8월 27일(목) 10:00 ~ 16:00"
+    },
+    {
+      "label": "장소",
+      "value": "수원컨벤션센터 컨벤션홀 1홀"
+    },
+    {
+      "label": "참가비",
+      "value": "사전등록 : 220,000원(VAT포함)"
     },
     {
       "label": "",
+      "value": "현장등록 : 275,000원(VAT포함) ※현장등록시 카드결제만 가능"
+    },
+    {
+      "label": "주최",
+      "value": "소부장기술융합포럼, 소부장기술융합연구조합"
+    },
+    {
+      "label": "후원",
       "value": ""
+    },
+    {
+      "label": "신청방법",
+      "value": "우측 상단 QR 스캔 or 아래 신청 URL 접속"
+    },
+    {
+      "label": "",
+      "value": "https://form.sobujangforum.com/2026-8-sbj-symposium"
+    },
+    {
+      "label": "문의",
+      "value": "소부장기술융합포럼 사무국"
+    },
+    {
+      "label": "",
+      "value": "sobujang@starc.co.kr / 031-708-5296"
     }
   ],
   "tableHeaders": [
@@ -20,38 +52,56 @@
     "발표자"
   ],
   "useQR": true,
-  "qrData": "",
+  "qrData": "https://form.sobujangforum.com/2026-8-sbj-symposium",
   "programs": [
     {
       "content": "",
       "sub": "",
-      "speaker": "",
+      "speaker": "네덜란드(1)",
       "role": ""
     },
     {
       "content": "",
       "sub": "",
-      "speaker": "",
+      "speaker": "네덜란드(2)",
       "role": ""
     },
     {
       "content": "",
       "sub": "",
-      "speaker": "",
+      "speaker": "ETRI",
       "role": ""
     },
     {
       "content": "",
       "sub": "",
+      "speaker": "성학경",
+      "role": "소부장기술융합포럼 운영위원장"
+    },
+    {
+      "content": "점심",
+      "sub": "",
       "speaker": "",
       "role": ""
     },
     {
-      "content": "",
+      "content": "AI 기업 적용 사례 1. 모벤시스",
       "sub": "",
-      "speaker": "",
-      "role": ""
+      "speaker": "김기현",
+      "role": "모벤시스 / 대표"
+    },
+    {
+      "content": "AI 기업 적용 사례 2. 나노코어",
+      "sub": "",
+      "speaker": "정무길",
+      "role": "나노코어 / 대표"
+    },
+    {
+      "content": "AI 기업 적용 사례 3. 엔젯",
+      "sub": "",
+      "speaker": "변도영",
+      "role": "엔젯 / 대표"
     }
   ],
-  "savedAt": "2026-07-01T05:37:19.881Z"
+  "savedAt": "2026-07-01T05:52:32.113Z"
 }

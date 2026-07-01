@@ -1,0 +1,101 @@
+{
+  "org": "소부장기술융합연구조합",
+  "pointColor": "#5d21c4",
+  "eventLabel": "2026 SOBUJANG EDUCATION PROGRAM",
+  "mainTitle": "2026년 7월\n경력사원 역량 강화 교육",
+  "subtitle": "",
+  "infoItems": [
+    {
+      "label": "강사",
+      "value": "소부장기술융합포럼 김태식 교육전문위원(전 한양대/삼성전자)"
+    },
+    {
+      "label": "일시",
+      "value": "2026년 7월 21일(화) 09:30 ~ 18:30"
+    },
+    {
+      "label": "장소",
+      "value": "소부장기술융합포럼 판교연구소(경기도 성남시 분당구 판교역로 146번길 17)"
+    },
+    {
+      "label": "교육대상",
+      "value": "과장급 이상 임직원"
+    },
+    {
+      "label": "교육비",
+      "value": "1인 20만원(중식 미포함)"
+    },
+    {
+      "label": "입금계좌",
+      "value": "하나은행 404-910018-29204 소부장기술융합연구조합"
+    },
+    {
+      "label": "신청방법",
+      "value": "우측 상단 QR 스캔 or 아래 신청 URL 접속"
+    },
+    {
+      "label": "",
+      "value": "https://form.sobujangforum.com/2026-7-2th-ldp"
+    },
+    {
+      "label": "문의",
+      "value": "사무국(sobujang@starc.co.kr)"
+    },
+    {
+      "label": "주최",
+      "value": "소부장기술융합포럼/연구조합"
+    }
+  ],
+  "tableHeaders": [
+    "No",
+    "내용",
+    "강사"
+  ],
+  "useQR": true,
+  "qrData": "https://form.sobujangforum.com/2026-7-2th-ldp",
+  "programs": [
+    {
+      "content": "회사와 내가 존재하는 이유",
+      "sub": "- 미션\n- 비전\n- 핵심가치",
+      "speaker": "김태식 교수",
+      "role": ""
+    },
+    {
+      "content": "직장인 프로의식과 주인의식",
+      "sub": "- 직원과 프로의 차이\n- 월급받는 사람과 성과내는 사람의 차이",
+      "speaker": "김태식 교수",
+      "role": ""
+    },
+    {
+      "content": "직장예절과 조직생활",
+      "sub": "- 보고 예절\n- 이메일/메신저 예절\n- 회의 예절",
+      "speaker": "김태식 교수",
+      "role": ""
+    },
+    {
+      "content": "신뢰받는 직원의 행동원칙",
+      "sub": "- 약속\n- 책임감\n- 협업",
+      "speaker": "김태식 교수",
+      "role": ""
+    },
+    {
+      "content": "업무보고의 기술",
+      "sub": "- 상사가 원하는 보고\n- 1페이지 보고법\n- 문제해결형 보고",
+      "speaker": "김태식 교수",
+      "role": ""
+    },
+    {
+      "content": "제안서 작성법",
+      "sub": "- 문제 정의\n- 원인 분석\n- 개선안 작성",
+      "speaker": "김태식 교수",
+      "role": ""
+    },
+    {
+      "content": "AI 활용 실무",
+      "sub": "- 문서 작성\n- 회의록 작성\n- 보고서 작성\n- 데이터 분석\n- 제안서 작성",
+      "speaker": "김태식 교수",
+      "role": ""
+    }
+  ],
+  "savedAt": "2026-07-01T04:42:08.501Z"
+}

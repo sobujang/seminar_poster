@@ -1,0 +1,57 @@
+{
+  "org": "소부장기술융합포럼",
+  "pointColor": "#2d2de0",
+  "eventLabel": "2026 SBJ Forum Symposium",
+  "mainTitle": "2026년 8월\n소부장기술융합포럼 심포지엄",
+  "subtitle": "최근 반도체 관련 소부장 기업 이슈",
+  "infoItems": [
+    {
+      "label": "",
+      "value": ""
+    },
+    {
+      "label": "",
+      "value": ""
+    }
+  ],
+  "tableHeaders": [
+    "No",
+    "내용",
+    "발표자"
+  ],
+  "useQR": true,
+  "qrData": "",
+  "programs": [
+    {
+      "content": "",
+      "sub": "",
+      "speaker": "",
+      "role": ""
+    },
+    {
+      "content": "",
+      "sub": "",
+      "speaker": "",
+      "role": ""
+    },
+    {
+      "content": "",
+      "sub": "",
+      "speaker": "",
+      "role": ""
+    },
+    {
+      "content": "",
+      "sub": "",
+      "speaker": "",
+      "role": ""
+    },
+    {
+      "content": "",
+      "sub": "",
+      "speaker": "",
+      "role": ""
+    }
+  ],
+  "savedAt": "2026-07-01T05:37:19.881Z"
+}

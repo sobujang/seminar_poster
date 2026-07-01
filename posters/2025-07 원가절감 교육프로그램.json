@@ -39,6 +39,10 @@
     },
     {
       "label": "신청방법",
+      "value": "우측상단 QR 스캔 or 아래 URL 접속"
+    },
+    {
+      "label": "",
       "value": "https://form.sobujangforum.com/2026-7-3th-cost-reduction"
     },
     {
@@ -85,5 +89,5 @@
       "role": ""
     }
   ],
-  "savedAt": "2026-07-01T02:47:55.219Z"
+  "savedAt": "2026-07-01T02:49:40.587Z"
 }

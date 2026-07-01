@@ -2,8 +2,8 @@
   "org": "소부장기술융합연구조합",
   "pointColor": "#5d21c4",
   "eventLabel": "2026 SOBUJANG EDUCATION PROGRAM",
-  "mainTitle": "2026년 7월\n경력사원 역량 강화 교육",
-  "subtitle": "",
+  "mainTitle": "2026년 7월\n경력사원 역량 강화 프로그램",
+  "subtitle": "#AI실무역량강화 #쌍방향소통 #리더십고도화",
   "infoItems": [
     {
       "label": "강사",
@@ -55,47 +55,23 @@
   "qrData": "https://form.sobujangforum.com/2026-7-2th-ldp",
   "programs": [
     {
-      "content": "회사와 내가 존재하는 이유",
-      "sub": "- 미션\n- 비전\n- 핵심가치",
+      "content": "AI 역량 강화",
+      "sub": "경력사원에게 필요한 AI 실무 실습",
       "speaker": "김태식 교수",
       "role": ""
     },
     {
-      "content": "직장인 프로의식과 주인의식",
-      "sub": "- 직원과 프로의 차이\n- 월급받는 사람과 성과내는 사람의 차이",
+      "content": "쌍방향 소통 기술",
+      "sub": "팀 내 소통 문제 해결 및 업무 효율 극대화",
       "speaker": "김태식 교수",
       "role": ""
     },
     {
-      "content": "직장예절과 조직생활",
-      "sub": "- 보고 예절\n- 이메일/메신저 예절\n- 회의 예절",
-      "speaker": "김태식 교수",
-      "role": ""
-    },
-    {
-      "content": "신뢰받는 직원의 행동원칙",
-      "sub": "- 약속\n- 책임감\n- 협업",
-      "speaker": "김태식 교수",
-      "role": ""
-    },
-    {
-      "content": "업무보고의 기술",
-      "sub": "- 상사가 원하는 보고\n- 1페이지 보고법\n- 문제해결형 보고",
-      "speaker": "김태식 교수",
-      "role": ""
-    },
-    {
-      "content": "제안서 작성법",
-      "sub": "- 문제 정의\n- 원인 분석\n- 개선안 작성",
-      "speaker": "김태식 교수",
-      "role": ""
-    },
-    {
-      "content": "AI 활용 실무",
-      "sub": "- 문서 작성\n- 회의록 작성\n- 보고서 작성\n- 데이터 분석\n- 제안서 작성",
+      "content": "성과창출 리더십",
+      "sub": "리더십 발휘와 조직 성과의 연관성 분석",
       "speaker": "김태식 교수",
       "role": ""
     }
   ],
-  "savedAt": "2026-07-01T04:42:08.501Z"
+  "savedAt": "2026-07-01T04:47:48.000Z"
 }
